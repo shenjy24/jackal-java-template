@@ -1,0 +1,44 @@
+server:
+  port: 8080
+  domain: ""
+spring:
+  application:
+    name: "java-template"
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  datasource:
+    url: jdbc:mysql://172.17.0.1:3306/template?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong&allowPublicKeyRetrieval=true
+    username: root
+    password: "******"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      leak-detection-threshold: 60000
+      auto-commit: true
+      pool-name: "TemplateHikariCP"
+      initialization-fail-timeout: 1
+      connection-init-sql: SET NAMES utf8mb4
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+aliyun:
+  accessKeyId: "******"
+  accessKeySecret: "******"
+  ossUrl: "https://%s.oss-cn-hangzhou.aliyuncs.com/"
+  ossEndpoint: "https://oss-cn-hangzhou.aliyuncs.com"
+  ossRegion: "cn-hangzhou"
+  ossBucket: "template"

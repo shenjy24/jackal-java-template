@@ -1,0 +1,36 @@
+# 1. 基础默认行为：让 Git 自动推断并转换文本文件的换行符（检出时转为本地格式，提交时转为 LF）
+* text=auto
+
+# 2. 脚本文件：强制指定换行符（极其重要，跨平台执行的保障）
+/mvnw text eol=lf
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# 3. 核心源代码与配置文件：明确声明为文本文件
+*.java text
+*.swift text
+*.xml text
+*.yml text
+*.yaml text
+*.properties text
+*.json text
+*.md text
+
+# 4. 二进制文件：严禁 Git 动它们（防止 Git 误将它们当成文本进行换行符转换，导致文件损坏）
+# -- 基础二进制文件
+*.class binary
+*.jar binary
+*.war binary
+*.zip binary
+*.tar.gz binary
+# -- 图片
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+# -- 音频及模型文件
+*.wav binary
+*.mp3 binary
+*.pcm binary
+*.onnx binary

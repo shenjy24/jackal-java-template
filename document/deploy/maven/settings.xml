@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <localRepository>/Users/shenjiayun/.m2/repository</localRepository>
+
+  <servers>
+      <!-- 阿里云云效仓库  https://packages.aliyun.com/maven/2572276-release-bvTuYo/guide -->
+      <server>
+        <id>2572276-release-bvTuYo</id>
+        <username>689a8dee46600729feea2a29</username>
+        <password>mALo9wu4N47h</password>
+      </server>
+      <server>
+        <id>2572276-snapshot-AUZXin</id>
+        <username>689a8dee46600729feea2a29</username>
+        <password>mALo9wu4N47h</password>
+      </server>
+  </servers>
+
+  <profiles>
+    <profile>
+      <id>aliyun-repo</id>
+      <properties>
+          <!-- Release仓库部署地址 -->
+          <altReleaseDeploymentRepository>
+              2572276-release-bvTuYo::default::https://packages.aliyun.com/689a8e06e94e043d2d100831/maven/2572276-release-bvtuyo
+          </altReleaseDeploymentRepository>
+          <!-- Snapshot仓库部署地址 -->
+          <altSnapshotDeploymentRepository>
+              2572276-snapshot-AUZXin::default::https://packages.aliyun.com/689a8e06e94e043d2d100831/maven/2572276-snapshot-auzxin
+          </altSnapshotDeploymentRepository>
+      </properties>
+      
+      <!-- 仓库拉取地址 -->
+      <repositories>
+          <repository>
+              <id>2572276-release-bvTuYo</id>
+              <url>https://packages.aliyun.com/689a8e06e94e043d2d100831/maven/2572276-release-bvtuyo</url>
+              <releases>
+                  <enabled>true</enabled>
+              </releases>
+              <snapshots>
+                  <enabled>false</enabled> <!-- Release库禁用Snapshot -->
+              </snapshots>
+          </repository>
+          <repository>
+              <id>2572276-snapshot-AUZXin</id>
+              <url>https://packages.aliyun.com/689a8e06e94e043d2d100831/maven/2572276-snapshot-auzxin</url>
+              <releases>
+                  <enabled>false</enabled> <!-- Snapshot库禁用Release -->
+              </releases>
+              <snapshots>
+                  <enabled>true</enabled>
+                  <updatePolicy>always</updatePolicy> <!-- 每次构建检查更新 -->
+              </snapshots>
+          </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <!-- 激活配置 -->
+  <activeProfiles>
+    <activeProfile>aliyun-repo</activeProfile>
+  </activeProfiles>
+
+  <!-- 镜像加速 (排除私库）-->
+  <mirrors>
+    <mirror>
+      <id>aliyun-public</id>
+      <mirrorOf>central,jcenter,!2572276-release-bvTuYo,!2572276-snapshot-AUZXin</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/nexus/content/groups/public</url>
+    </mirror>
+  </mirrors>
+</settings>

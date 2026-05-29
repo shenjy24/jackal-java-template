@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- 定义日志文件 输出位置 -->
+    <property name="log.log_dir" value="logs"/>
+    <property name="log.log_name" value="log"/>
+    <property name="log.maxHistory" value="30"/>
+    <property name="log.errorMaxHistory" value="90"/>
+    <property name="log.level" value="INFO"/>
+    <property name="log.maxSize" value="100MB"/>
+
+    <!-- 统一的日志格式 - 文件使用 -->
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+
+    <!-- 控制台彩色格式 - 与文件格式保持一致但带颜色 -->
+    <property name="console.pattern"
+              value="%blue(%d{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)] %highlight(%-5level) %yellow(%logger{50}) - %msg%n"/>
+
+    <!-- ConsoleAppender 控制台输出日志 - 输出INFO及以上所有日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${console.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 异步文件输出 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!-- 异步错误日志输出 -->
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="ERROR_FILE"/>
+    </appender>
+
+    <!-- 统一文件输出 - 包含所有INFO及以上日志 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.log_dir}/app/%d{yyyy-MM-dd}/app_${log.log_name}-%i.log</fileNamePattern>
+            <maxHistory>${log.maxHistory}</maxHistory>
+            <MaxFileSize>${log.maxSize}</MaxFileSize>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 错误日志文件 - 只输出ERROR级别 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.log_dir}/error/%d{yyyy-MM-dd}/error_${log.log_name}-%i.log</fileNamePattern>
+            <maxHistory>${log.errorMaxHistory}</maxHistory>
+            <MaxFileSize>${log.maxSize}</MaxFileSize>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 第三方库日志级别控制 - 但控制台仍会输出INFO及以上 -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.apache.http" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+
+    <springProfile name="local,default">
+        <logger name="com.tech" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <logger name="com.tech" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="com.tech" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_FILE"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </root>
+    </springProfile>
+</configuration>
