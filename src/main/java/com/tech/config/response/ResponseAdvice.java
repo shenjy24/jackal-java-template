@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSON;
 import com.tech.common.annotation.auth.DirectResponse;
 import com.tech.config.response.bean.JsonResult;
 import com.tech.config.response.bean.SystemCode;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,7 +22,6 @@ import java.lang.reflect.Method;
  * @since 2025-01-06
  */
 @ControllerAdvice
-@ConditionalOnMissingClass
 public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
