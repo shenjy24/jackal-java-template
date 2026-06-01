@@ -14,6 +14,8 @@ Spring Boot 3 后端服务，默认端口 **8080**。
 
 **上线前必改**：数据库连接、阿里云 OSS 密钥（`aliyun.*`）。
 
+可选 **Netty TCP/WebSocket** 长连接模块见 [document/netty.md](document/netty.md)（`jackal.netty.enabled`，默认关闭）。
+
 ## 部署
 
 ### 生产发布

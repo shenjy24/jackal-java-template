@@ -9,3 +9,23 @@ spring:
 
 aliyun:
   ossBucket: "template-local"
+
+# Netty TCP / WebSocket（默认关闭，避免与仅 HTTP 部署冲突）
+jackal:
+  netty:
+    enabled: false
+    tcp:
+      enabled: true
+      port: 9000
+      boss-threads: 1
+      worker-threads: 0
+    websocket:
+      enabled: true
+      port: 9001
+      path: /ws
+    protocol:
+      max-frame-length: 1048576
+    heartbeat:
+      reader-idle-seconds: 90
+      writer-idle-seconds: 30
+      all-idle-seconds: 0
