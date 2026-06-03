@@ -1,4 +1,4 @@
-package com.tech.service.infra.aliyun;
+package com.tech.component.aliyun;
 
 import com.alibaba.fastjson2.JSON;
 import com.aliyun.oss.ClientBuilderConfiguration;

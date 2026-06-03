@@ -2,7 +2,7 @@ package com.tech.controller;
 
 import com.tech.model.qo.cache.CacheClearQo;
 import com.tech.model.qo.cache.CacheEvictQo;
-import com.tech.service.infra.cache.CacheService;
+import com.tech.component.cache.CacheService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
