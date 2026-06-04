@@ -144,8 +144,9 @@ public class AuthCommandService {
         authRolePermDao.removeByRoleId(roleId);
     }
 
-    public AuthPermEntity saveAuthPerm(String code, String name, Integer type, String remark) {
+    public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String remark) {
         AuthPermEntity perm = new AuthPermEntity()
+                .setParentId(parentId)
                 .setCode(code)
                 .setName(name)
                 .setType(type)
@@ -154,11 +155,12 @@ public class AuthCommandService {
         return perm;
     }
 
-    public void updateAuthPerm(Long id, String code, String name, Integer type, String remark) {
+    public void updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String remark) {
         AuthPermEntity perm = authPermDao.getById(id);
         if (perm == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
+        perm.setParentId(parentId);
         perm.setCode(code);
         perm.setName(name);
         perm.setType(type);

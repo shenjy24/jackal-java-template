@@ -11,7 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,36 +42,57 @@ public class AuthQueryService {
         return TimeUtil.currentTimestamp().compareTo(token.getExpireTime()) > 0;
     }
 
-    public Set<String> listUserPerm(Long userId, PermType permType) {
-        Set<String> codes = new HashSet<>();
+    public Set<String> listUserPermCode(Long userId, PermType permType) {
+        return listUserPerm(userId, permType).stream()
+                .map(AuthPermEntity::getCode)
+                .collect(Collectors.toSet());
+    }
+
+    public List<AuthPermEntity> listUserPerm(Long userId, PermType permType) {
         if (userId == null) {
-            return codes;
+            return Collections.emptyList();
         }
         List<AuthUserRoleEntity> userRoles = authUserRoleDao.listAuthUserRole(userId);
         if (CollectionUtils.isEmpty(userRoles)) {
-            return codes;
+            return Collections.emptyList();
         }
         Set<Long> roleIds = userRoles.stream().map(AuthUserRoleEntity::getRoleId).collect(Collectors.toSet());
         List<AuthRoleEntity> roles = authRoleDao.listAuthRole(roleIds);
         if (CollectionUtils.isEmpty(roles)) {
-            return codes;
+            return Collections.emptyList();
         }
         roleIds = roles.stream().map(AuthRoleEntity::getId).collect(Collectors.toSet());
         List<AuthRolePermEntity> rolePerms = authRolePermDao.listAuthRolePermission(roleIds);
         if (CollectionUtils.isEmpty(rolePerms)) {
-            return codes;
+            return Collections.emptyList();
         }
         Set<Long> permIds = rolePerms.stream().map(AuthRolePermEntity::getPermId).collect(Collectors.toSet());
         if (permIds.isEmpty()) {
-            return codes;
+            return Collections.emptyList();
         }
-        List<AuthPermEntity> perms = authPermDao.listAuthPermission(permIds);
+        List<AuthPermEntity> perms = authPermDao.listAuthPerm(permIds);
         if (permType == null) {
-            return perms.stream().map(AuthPermEntity::getCode).collect(Collectors.toSet());
+            return perms;
         }
         return perms.stream().filter(e -> permType.getCode().equals(e.getType()))
-                .map(AuthPermEntity::getCode)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
+    }
+
+    public List<AuthPermEntity> listUserMenu(Long userId) {
+        return listUserPerm(userId, PermType.MENU);
+    }
+
+    public List<AuthPermEntity> listUserButton(Long userId, String menuCode) {
+        if (StringUtils.isBlank(menuCode)) {
+            return Collections.emptyList();
+        }
+        AuthPermEntity menu = authPermDao.getByCode(menuCode);
+        if (menu == null) {
+            return Collections.emptyList();
+        }
+        return listUserPerm(userId, PermType.BUTTON).stream()
+                .filter(e -> menu.getId().equals(e.getParentId()))
+                .collect(Collectors.toList());
     }
 
     public AuthUserEntity getAuthUser(Long userId) {

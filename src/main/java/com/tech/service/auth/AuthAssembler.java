@@ -3,6 +3,7 @@ package com.tech.service.auth;
 import com.tech.repository.entity.auth.AuthUserEntity;
 import com.tech.repository.entity.auth.AuthPermEntity;
 import com.tech.repository.entity.auth.AuthRoleEntity;
+import com.tech.repository.model.vo.auth.AuthMenuVo;
 import com.tech.repository.model.vo.auth.AuthPermVo;
 import com.tech.repository.model.vo.auth.AuthRoleVo;
 import com.tech.repository.model.vo.auth.AuthUserVo;
@@ -11,8 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -64,6 +69,7 @@ public class AuthAssembler {
         }
         AuthPermVo vo = new AuthPermVo();
         vo.setId(perm.getId());
+        vo.setParentId(perm.getParentId());
         vo.setCode(perm.getCode());
         vo.setName(perm.getName());
         vo.setType(perm.getType());
@@ -76,5 +82,35 @@ public class AuthAssembler {
             return Collections.emptyList();
         }
         return perms.stream().map(this::toAuthPermVo).collect(Collectors.toList());
+    }
+
+    public List<AuthMenuVo> toAuthMenuTree(List<AuthPermEntity> menus) {
+        if (CollectionUtils.isEmpty(menus)) {
+            return Collections.emptyList();
+        }
+        Map<Long, AuthMenuVo> menuMap = menus.stream()
+                .sorted(Comparator.comparing(AuthPermEntity::getCode))
+                .collect(Collectors.toMap(AuthPermEntity::getId, this::toAuthMenuVo, (a, b) -> a, LinkedHashMap::new));
+        List<AuthMenuVo> roots = new ArrayList<>();
+        for (AuthMenuVo menu : menuMap.values()) {
+            AuthMenuVo parent = menuMap.get(menu.getParentId());
+            if (parent == null) {
+                roots.add(menu);
+            } else {
+                parent.getChildren().add(menu);
+            }
+        }
+        return roots;
+    }
+
+    private AuthMenuVo toAuthMenuVo(AuthPermEntity menu) {
+        AuthMenuVo vo = new AuthMenuVo();
+        vo.setId(menu.getId());
+        vo.setParentId(menu.getParentId());
+        vo.setCode(menu.getCode());
+        vo.setName(menu.getName());
+        vo.setRemark(menu.getRemark());
+        vo.setChildren(new ArrayList<>());
+        return vo;
     }
 }

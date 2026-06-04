@@ -10,5 +10,6 @@ public class AuthPermEntity extends LogicEntity {
     private String code;
     private String name;
     private Integer type;
+    private Long parentId;
     private String remark;
 }

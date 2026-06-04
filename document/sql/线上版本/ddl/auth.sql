@@ -40,13 +40,15 @@ CREATE TABLE IF NOT EXISTS `auth_perm` (
   `id`          bigint          NOT NULL COMMENT '权限ID',
   `code`        varchar(128)    NOT NULL COMMENT '权限编码',
   `name`        varchar(128)    NOT NULL COMMENT '权限名称',
-  `type`        tinyint         NOT NULL COMMENT '权限类型 1.API接口 2.菜单',
+  `type`        tinyint         NOT NULL COMMENT '权限类型 1.按钮 2.菜单',
+  `parent_id`   bigint          NOT NULL DEFAULT 0 COMMENT '父级权限ID',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
   `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
   `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_perm_code` (`code`)
+  UNIQUE KEY `uk_perm_code` (`code`),
+  KEY `idx_parent_id` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='权限表';
 
 CREATE TABLE IF NOT EXISTS `auth_user_role` (
@@ -72,5 +74,4 @@ CREATE TABLE IF NOT EXISTS `auth_role_perm` (
   KEY `idx_role_id` (`role_id`),
   KEY `idx_perm_id` (`perm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='角色权限关联表';
-
 

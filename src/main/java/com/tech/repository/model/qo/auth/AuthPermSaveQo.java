@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class AuthPermSaveQo {
+    private Long parentId = 0L;
     @NotBlank(message = ErrorMsg.PARAM_ERROR)
     private String code;
     @NotBlank(message = ErrorMsg.PARAM_ERROR)

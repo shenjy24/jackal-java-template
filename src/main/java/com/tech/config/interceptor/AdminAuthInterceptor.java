@@ -2,6 +2,7 @@ package com.tech.config.interceptor;
 
 import com.tech.common.annotation.auth.Permission;
 import com.tech.common.constant.Constants;
+import com.tech.common.enums.auth.PermCode;
 import com.tech.common.enums.auth.PermType;
 import com.tech.config.response.bean.BizException;
 import com.tech.config.response.bean.SystemCode;
@@ -37,11 +38,11 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
             return true;
         }
         Long userId = (Long) request.getAttribute(Constants.REQ_ATT_USER);
-        Set<String> userPerms = authQueryService.listUserPerm(userId, PermType.API);
-        String[] needPerms = permission.value();
+        Set<String> userPerms = authQueryService.listUserPermCode(userId, PermType.BUTTON);
+        PermCode[] needPerms = permission.value();
         boolean passed = permission.requireAll()
-                ? Arrays.stream(needPerms).allMatch(userPerms::contains)
-                : Arrays.stream(needPerms).anyMatch(userPerms::contains);
+                ? Arrays.stream(needPerms).map(PermCode::getCode).allMatch(userPerms::contains)
+                : Arrays.stream(needPerms).map(PermCode::getCode).anyMatch(userPerms::contains);
         if (!passed) {
             throw new BizException(SystemCode.NO_PERM);
         }

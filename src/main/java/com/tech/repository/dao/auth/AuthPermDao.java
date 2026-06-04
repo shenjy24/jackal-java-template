@@ -16,7 +16,14 @@ import java.util.Set;
 
 @Service
 public class AuthPermDao extends ServiceImpl<AuthPermMapper, AuthPermEntity> {
-    public List<AuthPermEntity> listAuthPermission(Set<Long> permIds) {
+    public AuthPermEntity getByCode(String code) {
+        if (StringUtils.isBlank(code)) {
+            return null;
+        }
+        return getOne(new LambdaQueryWrapper<AuthPermEntity>().eq(AuthPermEntity::getCode, code));
+    }
+
+    public List<AuthPermEntity> listAuthPerm(Set<Long> permIds) {
         if (CollectionUtils.isEmpty(permIds)) {
             return Collections.emptyList();
         }

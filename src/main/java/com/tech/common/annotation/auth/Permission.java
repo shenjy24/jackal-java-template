@@ -1,5 +1,7 @@
 package com.tech.common.annotation.auth;
 
+import com.tech.common.enums.auth.PermCode;
+
 import java.lang.annotation.*;
 
 /**
@@ -13,6 +15,6 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Permission {
-    String[] value();
+    PermCode[] value();
     boolean requireAll() default true;
 }

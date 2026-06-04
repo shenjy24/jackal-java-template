@@ -4,9 +4,9 @@ Spring Boot 3 后端服务，默认端口 **8080**。
 
 ## 环境
 
-| Profile | 用途 | 数据库 | 端口 |
+| Profile | 用途 | 数据库 | 端口   |
 |---------|------|--------|------|
-| `local` | 本地开发 | `template` | 8082 |
+| `local` | 本地开发 | `template` | 8080 |
 | `dev`   | 测试环境 | `template_dev` | 8080 |
 | `prod`  | 生产环境 | `template_prod` | 8080 |
 

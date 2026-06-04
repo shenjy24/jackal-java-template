@@ -7,20 +7,9 @@ import com.tech.config.response.bean.JsonPage;
 import com.tech.repository.entity.auth.AuthPermEntity;
 import com.tech.repository.entity.auth.AuthRoleEntity;
 import com.tech.repository.entity.auth.AuthUserEntity;
-import com.tech.repository.model.qo.auth.AuthIdQo;
-import com.tech.repository.model.qo.auth.AuthPermQueryQo;
-import com.tech.repository.model.qo.auth.AuthPermSaveQo;
-import com.tech.repository.model.qo.auth.AuthPermUpdateQo;
-import com.tech.repository.model.qo.auth.AuthRolePermBindQo;
-import com.tech.repository.model.qo.auth.AuthRoleQueryQo;
-import com.tech.repository.model.qo.auth.AuthRoleSaveQo;
-import com.tech.repository.model.qo.auth.AuthRoleUpdateQo;
-import com.tech.repository.model.qo.auth.AuthUserPasswordUpdateQo;
-import com.tech.repository.model.qo.auth.AuthUserQueryQo;
-import com.tech.repository.model.qo.auth.AuthUserRoleBindQo;
-import com.tech.repository.model.qo.auth.AuthUserSaveQo;
-import com.tech.repository.model.qo.auth.AuthUserUpdateQo;
+import com.tech.repository.model.qo.auth.*;
 import com.tech.repository.model.qo.user.LoginAccountQo;
+import com.tech.repository.model.vo.auth.AuthMenuVo;
 import com.tech.repository.model.vo.auth.AuthPermVo;
 import com.tech.repository.model.vo.auth.AuthRoleVo;
 import com.tech.repository.model.vo.auth.AuthUserVo;
@@ -34,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 管理后台用户控制器
@@ -75,6 +66,31 @@ public class AdminAuthController {
     public AuthUserVo getUser(@UserId Long userId) {
         AuthUserEntity user = authQueryService.getAuthUser(userId);
         return authAssembler.toAuthUserVo(user);
+    }
+
+    /**
+     * 获取当前用户菜单树
+     *
+     * @param userId 当前用户ID
+     * @return 菜单树
+     */
+    @PostMapping("/listAuthMenu")
+    public List<AuthMenuVo> listAuthMenu(@UserId Long userId) {
+        List<AuthPermEntity> menus = authQueryService.listUserMenu(userId);
+        return authAssembler.toAuthMenuTree(menus);
+    }
+
+    /**
+     * 获取当前用户页面按钮
+     *
+     * @param userId 当前用户ID
+     * @param qo     页面菜单参数
+     * @return 按钮权限列表
+     */
+    @PostMapping("/listAuthButton")
+    public List<AuthPermVo> listAuthButton(@UserId Long userId, @Valid @RequestBody AuthButtonQueryQo qo) {
+        List<AuthPermEntity> buttons = authQueryService.listUserButton(userId, qo.getMenuCode());
+        return authAssembler.toAuthPermVo(buttons);
     }
 
     /**
@@ -196,7 +212,7 @@ public class AdminAuthController {
      */
     @PostMapping("/saveAuthPerm")
     public AuthPermVo saveAuthPerm(@Valid @RequestBody AuthPermSaveQo qo) {
-        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
         return authAssembler.toAuthPermVo(perm);
     }
 
@@ -207,7 +223,7 @@ public class AdminAuthController {
      */
     @PostMapping("/updateAuthPerm")
     public void updateAuthPerm(@Valid @RequestBody AuthPermUpdateQo qo) {
-        authCommandService.updateAuthPerm(qo.getId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
     }
 
     /**

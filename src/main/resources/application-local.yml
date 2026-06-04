@@ -1,11 +1,8 @@
-server:
-  port: 8082
-  domain: ""
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/template?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Hongkong&allowPublicKeyRetrieval=true
     username: root
-    password: "******"
+    password: ${DB_PASS:123456}
 
 aliyun:
   ossBucket: "template-local"
