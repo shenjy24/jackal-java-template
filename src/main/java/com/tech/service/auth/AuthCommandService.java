@@ -2,12 +2,7 @@ package com.tech.service.auth;
 
 import com.tech.common.enums.ErrorCode;
 import com.tech.config.response.bean.BizException;
-import com.tech.repository.dao.auth.AuthPermDao;
-import com.tech.repository.dao.auth.AuthRoleDao;
-import com.tech.repository.dao.auth.AuthRolePermDao;
-import com.tech.repository.dao.auth.AuthUserDao;
-import com.tech.repository.dao.auth.AuthUserRoleDao;
-import com.tech.repository.dao.auth.AuthUserTokenDao;
+import com.tech.repository.dao.auth.*;
 import com.tech.repository.entity.auth.AuthPermEntity;
 import com.tech.repository.entity.auth.AuthRoleEntity;
 import com.tech.repository.entity.auth.AuthUserEntity;
@@ -72,6 +67,9 @@ public class AuthCommandService {
     }
 
     public AuthUserEntity saveAuthUser(String nickname, String avatar, String account, String password) {
+        if (StringUtils.isBlank(password)) {
+            throw new BizException(ErrorCode.PARAM_ERROR);
+        }
         AuthUserEntity existUser = authUserDao.getByAccount(account);
         if (existUser != null) {
             throw new BizException(ErrorCode.USER_ERROR5);
@@ -85,7 +83,7 @@ public class AuthCommandService {
         return user;
     }
 
-    public void updateAuthUser(Long id, String nickname, String avatar, String account) {
+    public AuthUserEntity updateAuthUser(Long id, String nickname, String avatar, String account) {
         AuthUserEntity user = authUserDao.getById(id);
         if (user == null) {
             throw new BizException(ErrorCode.USER_ERROR3);
@@ -100,6 +98,7 @@ public class AuthCommandService {
         user.setNickname(nickname);
         user.setAvatar(avatar);
         authUserDao.updateById(user);
+        return user;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -126,7 +125,7 @@ public class AuthCommandService {
         return role;
     }
 
-    public void updateAuthRole(Long id, String code, String name, String remark) {
+    public AuthRoleEntity updateAuthRole(Long id, String code, String name, String remark) {
         AuthRoleEntity role = authRoleDao.getById(id);
         if (role == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
@@ -135,6 +134,7 @@ public class AuthCommandService {
         role.setName(name);
         role.setRemark(remark);
         authRoleDao.updateById(role);
+        return role;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -155,7 +155,7 @@ public class AuthCommandService {
         return perm;
     }
 
-    public void updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String remark) {
+    public AuthPermEntity updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String remark) {
         AuthPermEntity perm = authPermDao.getById(id);
         if (perm == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
@@ -166,6 +166,7 @@ public class AuthCommandService {
         perm.setType(type);
         perm.setRemark(remark);
         authPermDao.updateById(perm);
+        return perm;
     }
 
     @Transactional(rollbackFor = Exception.class)

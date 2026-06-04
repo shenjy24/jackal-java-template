@@ -19,6 +19,7 @@ import com.tech.service.auth.AuthQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,25 +107,22 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增后台用户
+     * 新增或修改后台用户
      *
      * @param qo 用户参数
      * @return 用户信息
      */
-    @PostMapping("/saveAuthUser")
-    public AuthUserVo saveAuthUser(@Valid @RequestBody AuthUserSaveQo qo) {
-        AuthUserEntity user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount(), qo.getPassword());
+    @Transactional
+    @PostMapping("/saveOrUpdateAuthUser")
+    public AuthUserVo saveOrUpdateAuthUser(@Valid @RequestBody AuthUserQo qo) {
+        AuthUserEntity user;
+        if (qo.getId() == null) {
+            user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount(), qo.getPassword());
+        } else {
+            user = authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
+        }
+        authCommandService.bindUserRole(user.getId(), qo.getRoleIds());
         return authAssembler.toAuthUserVo(user);
-    }
-
-    /**
-     * 修改后台用户
-     *
-     * @param qo 用户参数
-     */
-    @PostMapping("/updateAuthUser")
-    public void updateAuthUser(@Valid @RequestBody AuthUserUpdateQo qo) {
-        authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
     }
 
     /**
@@ -161,25 +159,22 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增角色
+     * 新增或修改角色
      *
      * @param qo 角色参数
      * @return 角色信息
      */
-    @PostMapping("/saveAuthRole")
-    public AuthRoleVo saveAuthRole(@Valid @RequestBody AuthRoleSaveQo qo) {
-        AuthRoleEntity role = authCommandService.saveAuthRole(qo.getCode(), qo.getName(), qo.getRemark());
+    @Transactional
+    @PostMapping("/saveOrUpdateAuthRole")
+    public AuthRoleVo saveOrUpdateAuthRole(@Valid @RequestBody AuthRoleQo qo) {
+        AuthRoleEntity role;
+        if (qo.getId() == null) {
+            role = authCommandService.saveAuthRole(qo.getCode(), qo.getName(), qo.getRemark());
+        } else {
+            role = authCommandService.updateAuthRole(qo.getId(), qo.getCode(), qo.getName(), qo.getRemark());
+        }
+        authCommandService.bindRolePerm(role.getId(), qo.getPermIds());
         return authAssembler.toAuthRoleVo(role);
-    }
-
-    /**
-     * 修改角色
-     *
-     * @param qo 角色参数
-     */
-    @PostMapping("/updateAuthRole")
-    public void updateAuthRole(@Valid @RequestBody AuthRoleUpdateQo qo) {
-        authCommandService.updateAuthRole(qo.getId(), qo.getCode(), qo.getName(), qo.getRemark());
     }
 
     /**
@@ -205,25 +200,20 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增权限
+     * 新增或修改权限
      *
      * @param qo 权限参数
      * @return 权限信息
      */
-    @PostMapping("/saveAuthPerm")
-    public AuthPermVo saveAuthPerm(@Valid @RequestBody AuthPermSaveQo qo) {
-        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+    @PostMapping("/saveOrUpdateAuthPerm")
+    public AuthPermVo saveOrUpdateAuthPerm(@Valid @RequestBody AuthPermQo qo) {
+        AuthPermEntity perm;
+        if (qo.getId() == null) {
+            perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        } else {
+            perm = authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        }
         return authAssembler.toAuthPermVo(perm);
-    }
-
-    /**
-     * 修改权限
-     *
-     * @param qo 权限参数
-     */
-    @PostMapping("/updateAuthPerm")
-    public void updateAuthPerm(@Valid @RequestBody AuthPermUpdateQo qo) {
-        authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
     }
 
     /**

@@ -102,6 +102,20 @@ public class AuthQueryService {
         return authUserDao.getById(userId);
     }
 
+    public AuthRoleEntity getAuthRole(Long roleId) {
+        if (roleId == null) {
+            return null;
+        }
+        return authRoleDao.getById(roleId);
+    }
+
+    public AuthPermEntity getAuthPerm(Long permId) {
+        if (permId == null) {
+            return null;
+        }
+        return authPermDao.getById(permId);
+    }
+
     public IPage<AuthUserEntity> queryAuthUser(String account, String nickname, Integer pageNum, Integer pageSize) {
         return authUserDao.queryAuthUser(account, nickname, pageNum, pageSize);
     }
