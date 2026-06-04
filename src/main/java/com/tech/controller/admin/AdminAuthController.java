@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 管理后台用户控制器
@@ -243,6 +244,30 @@ public class AdminAuthController {
     public JsonPage<AuthPermVo> queryAuthPerm(@RequestBody AuthPermQueryQo qo) {
         IPage<AuthPermEntity> page = authQueryService.queryAuthPerm(qo.getCode(), qo.getName(), qo.getType(), qo.getPageNum(), qo.getPageSize());
         return new JsonPage<>(page.getTotal(), authAssembler.toAuthPermVo(page.getRecords()));
+    }
+
+    /**
+     * 获取全部权限树
+     *
+     * @return 权限树
+     */
+    @PostMapping("/listAuthPerm")
+    public List<AuthMenuVo> listAuthPerm() {
+        List<AuthPermEntity> perms = authQueryService.listAuthPerm();
+        return authAssembler.toAuthPermTree(perms);
+    }
+
+    /**
+     * 获取角色权限树
+     *
+     * @param qo 角色ID参数
+     * @return 带选中状态的权限树
+     */
+    @PostMapping("/listRolePerm")
+    public List<AuthMenuVo> listRolePerm(@Valid @RequestBody IdQo qo) {
+        List<AuthPermEntity> perms = authQueryService.listAuthPerm();
+        Set<Long> checkedIds = authQueryService.listRolePermId(qo.getId());
+        return authAssembler.toAuthPermTree(perms, checkedIds);
     }
 
     /**

@@ -95,6 +95,16 @@ public class AuthQueryService {
                 .collect(Collectors.toList());
     }
 
+    public List<AuthPermEntity> listAuthPerm() {
+        return authPermDao.listAuthPerm();
+    }
+
+    public Set<Long> listRolePermId(Long roleId) {
+        return authRolePermDao.listAuthRolePerm(roleId).stream()
+                .map(AuthRolePermEntity::getPermId)
+                .collect(Collectors.toSet());
+    }
+
     public AuthUserEntity getAuthUser(Long userId) {
         if (userId == null) {
             return null;

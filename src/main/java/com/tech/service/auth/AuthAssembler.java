@@ -1,8 +1,8 @@
 package com.tech.service.auth;
 
-import com.tech.repository.entity.auth.AuthUserEntity;
 import com.tech.repository.entity.auth.AuthPermEntity;
 import com.tech.repository.entity.auth.AuthRoleEntity;
+import com.tech.repository.entity.auth.AuthUserEntity;
 import com.tech.repository.model.vo.auth.AuthMenuVo;
 import com.tech.repository.model.vo.auth.AuthPermVo;
 import com.tech.repository.model.vo.auth.AuthRoleVo;
@@ -10,14 +10,10 @@ import com.tech.repository.model.vo.auth.AuthUserVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -85,12 +81,24 @@ public class AuthAssembler {
     }
 
     public List<AuthMenuVo> toAuthMenuTree(List<AuthPermEntity> menus) {
+        return buildAuthPermTree(menus, Collections.emptySet());
+    }
+
+    public List<AuthMenuVo> toAuthPermTree(List<AuthPermEntity> perms) {
+        return buildAuthPermTree(perms, Collections.emptySet());
+    }
+
+    public List<AuthMenuVo> toAuthPermTree(List<AuthPermEntity> perms, Set<Long> checkedIds) {
+        return buildAuthPermTree(perms, checkedIds == null ? Collections.emptySet() : checkedIds);
+    }
+
+    private List<AuthMenuVo> buildAuthPermTree(List<AuthPermEntity> menus, Set<Long> checkedIds) {
         if (CollectionUtils.isEmpty(menus)) {
             return Collections.emptyList();
         }
         Map<Long, AuthMenuVo> menuMap = menus.stream()
                 .sorted(Comparator.comparing(AuthPermEntity::getCode))
-                .collect(Collectors.toMap(AuthPermEntity::getId, this::toAuthMenuVo, (a, b) -> a, LinkedHashMap::new));
+                .collect(Collectors.toMap(AuthPermEntity::getId, e -> toAuthMenuVo(e, checkedIds), (a, b) -> a, LinkedHashMap::new));
         List<AuthMenuVo> roots = new ArrayList<>();
         for (AuthMenuVo menu : menuMap.values()) {
             AuthMenuVo parent = menuMap.get(menu.getParentId());
@@ -103,13 +111,14 @@ public class AuthAssembler {
         return roots;
     }
 
-    private AuthMenuVo toAuthMenuVo(AuthPermEntity menu) {
+    private AuthMenuVo toAuthMenuVo(AuthPermEntity menu, Set<Long> checkedIds) {
         AuthMenuVo vo = new AuthMenuVo();
         vo.setId(menu.getId());
         vo.setParentId(menu.getParentId());
         vo.setCode(menu.getCode());
         vo.setName(menu.getName());
         vo.setRemark(menu.getRemark());
+        vo.setChecked(BooleanUtils.toInteger(checkedIds.contains(menu.getId())));
         vo.setChildren(new ArrayList<>());
         return vo;
     }

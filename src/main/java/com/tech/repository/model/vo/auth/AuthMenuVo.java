@@ -11,5 +11,6 @@ public class AuthMenuVo {
     private String code;
     private String name;
     private String remark;
+    private Integer checked;
     private List<AuthMenuVo> children;
 }
