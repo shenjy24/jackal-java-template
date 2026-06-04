@@ -1,6 +1,8 @@
 package com.tech.repository.dao.auth;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tech.repository.entity.auth.AuthUserEntity;
 import com.tech.repository.mapper.auth.AuthUserMapper;
@@ -14,5 +16,13 @@ public class AuthUserDao extends ServiceImpl<AuthUserMapper, AuthUserEntity> {
             return null;
         }
         return getOne(new LambdaQueryWrapper<AuthUserEntity>().eq(AuthUserEntity::getAccount, account));
+    }
+
+    public IPage<AuthUserEntity> queryAuthUser(String account, String nickname, Integer pageNum, Integer pageSize) {
+        LambdaQueryWrapper<AuthUserEntity> wrapper = new LambdaQueryWrapper<AuthUserEntity>()
+                .like(StringUtils.isNotBlank(account), AuthUserEntity::getAccount, account)
+                .like(StringUtils.isNotBlank(nickname), AuthUserEntity::getNickname, nickname)
+                .orderByDesc(AuthUserEntity::getId);
+        return page(new Page<>(pageNum, pageSize), wrapper);
     }
 }

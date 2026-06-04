@@ -1,10 +1,19 @@
 package com.tech.service.auth;
 
 import com.tech.repository.entity.auth.AuthUserEntity;
+import com.tech.repository.entity.auth.AuthPermEntity;
+import com.tech.repository.entity.auth.AuthRoleEntity;
+import com.tech.repository.model.vo.auth.AuthPermVo;
+import com.tech.repository.model.vo.auth.AuthRoleVo;
 import com.tech.repository.model.vo.auth.AuthUserVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,7 +27,54 @@ public class AuthAssembler {
         AuthUserVo authUserVo = new AuthUserVo()
                 .setId(user.getId())
                 .setNickname(user.getNickname())
-                .setAvatar(user.getAvatar());
+                .setAvatar(user.getAvatar())
+                .setAccount(user.getAccount());
         return authUserVo;
+    }
+
+    public List<AuthUserVo> toAuthUserVoList(List<AuthUserEntity> users) {
+        if (CollectionUtils.isEmpty(users)) {
+            return Collections.emptyList();
+        }
+        return users.stream().map(this::toAuthUserVo).collect(Collectors.toList());
+    }
+
+    public AuthRoleVo toAuthRoleVo(AuthRoleEntity role) {
+        if (role == null) {
+            return null;
+        }
+        AuthRoleVo vo = new AuthRoleVo();
+        vo.setId(role.getId());
+        vo.setCode(role.getCode());
+        vo.setName(role.getName());
+        vo.setRemark(role.getRemark());
+        return vo;
+    }
+
+    public List<AuthRoleVo> toAuthRoleVoList(List<AuthRoleEntity> roles) {
+        if (CollectionUtils.isEmpty(roles)) {
+            return Collections.emptyList();
+        }
+        return roles.stream().map(this::toAuthRoleVo).collect(Collectors.toList());
+    }
+
+    public AuthPermVo toAuthPermVo(AuthPermEntity perm) {
+        if (perm == null) {
+            return null;
+        }
+        AuthPermVo vo = new AuthPermVo();
+        vo.setId(perm.getId());
+        vo.setCode(perm.getCode());
+        vo.setName(perm.getName());
+        vo.setType(perm.getType());
+        vo.setRemark(perm.getRemark());
+        return vo;
+    }
+
+    public List<AuthPermVo> toAuthPermVo(List<AuthPermEntity> perms) {
+        if (CollectionUtils.isEmpty(perms)) {
+            return Collections.emptyList();
+        }
+        return perms.stream().map(this::toAuthPermVo).collect(Collectors.toList());
     }
 }

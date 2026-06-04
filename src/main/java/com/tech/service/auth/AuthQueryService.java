@@ -1,5 +1,6 @@
 package com.tech.service.auth;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tech.common.enums.auth.PermType;
 import com.tech.repository.dao.auth.*;
 import com.tech.repository.entity.auth.*;
@@ -78,5 +79,17 @@ public class AuthQueryService {
             return null;
         }
         return authUserDao.getById(userId);
+    }
+
+    public IPage<AuthUserEntity> queryAuthUser(String account, String nickname, Integer pageNum, Integer pageSize) {
+        return authUserDao.queryAuthUser(account, nickname, pageNum, pageSize);
+    }
+
+    public IPage<AuthRoleEntity> queryAuthRole(String code, String name, Integer pageNum, Integer pageSize) {
+        return authRoleDao.queryAuthRole(code, name, pageNum, pageSize);
+    }
+
+    public IPage<AuthPermEntity> queryAuthPerm(String code, String name, Integer type, Integer pageNum, Integer pageSize) {
+        return authPermDao.queryAuthPerm(code, name, type, pageNum, pageSize);
     }
 }

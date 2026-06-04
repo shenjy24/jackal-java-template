@@ -14,7 +14,7 @@ public class Constants {
     public static final int TOKEN_REFRESH_MS = 60 * 60 * 1000;           // token刷新时间，单位毫秒
 
     public static final int PAGE_NUM = 1;
-    public static final int PAGE_SIZE = 10;
+    public static final int PAGE_SIZE = 20;
 
     public static final String CACHE_USER = "userCache";
 }
