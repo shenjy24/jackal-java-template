@@ -2,7 +2,9 @@ package com.tech.controller.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tech.common.annotation.auth.Anonymous;
+import com.tech.common.annotation.auth.Permission;
 import com.tech.common.annotation.auth.UserId;
+import com.tech.common.enums.auth.PermCode;
 import com.tech.config.response.bean.JsonPage;
 import com.tech.repository.entity.auth.AuthPermEntity;
 import com.tech.repository.entity.auth.AuthRoleEntity;
@@ -125,7 +127,7 @@ public class AdminAuthController {
      * @return 用户分页
      */
     @PostMapping("/getAuthUserById")
-    public AuthUserVo getAuthUser(@RequestBody IdQo qo) {
+    public AuthUserVo getAuthUser(@Valid @RequestBody IdQo qo) {
         AuthUserEntity user = authQueryService.getAuthUser(qo.getId());
         return authAssembler.toAuthUserVo(user);
     }
@@ -136,6 +138,7 @@ public class AdminAuthController {
      * @param qo 查询参数
      * @return 用户分页
      */
+    @Permission(PermCode.USER_QUERY)
     @PostMapping("/queryAuthUser")
     public JsonPage<AuthUserVo> queryAuthUser(@RequestBody AuthUserQueryQo qo) {
         IPage<AuthUserEntity> page = authQueryService.queryAuthUser(qo.getAccount(), qo.getNickname(), qo.getPageNum(), qo.getPageSize());
@@ -143,20 +146,31 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增或修改后台用户
+     * 新增后台用户
      *
      * @param qo 用户参数
      * @return 用户信息
      */
     @Transactional
-    @PostMapping("/saveOrUpdateAuthUser")
-    public AuthUserVo saveOrUpdateAuthUser(@Valid @RequestBody AuthUserQo qo) {
-        AuthUserEntity user;
-        if (qo.getId() == null) {
-            user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount());
-        } else {
-            user = authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
-        }
+    @Permission(PermCode.USER_SAVE)
+    @PostMapping("/saveAuthUser")
+    public AuthUserVo saveAuthUser(@Valid @RequestBody AuthUserQo qo) {
+        AuthUserEntity user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount());
+        authCommandService.bindUserRole(user.getId(), qo.getRoleIds());
+        return authAssembler.toAuthUserVo(user);
+    }
+
+    /**
+     * 修改后台用户
+     *
+     * @param qo 用户参数
+     * @return 用户信息
+     */
+    @Transactional
+    @Permission(PermCode.USER_UPDATE)
+    @PostMapping("/updateAuthUser")
+    public AuthUserVo updateAuthUser(@Valid @RequestBody AuthUserQo qo) {
+        AuthUserEntity user = authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
         authCommandService.bindUserRole(user.getId(), qo.getRoleIds());
         return authAssembler.toAuthUserVo(user);
     }
@@ -166,6 +180,7 @@ public class AdminAuthController {
      *
      * @param qo 用户ID参数
      */
+    @Permission(PermCode.USER_DELETE)
     @PostMapping("/deleteAuthUser")
     public void deleteAuthUser(@Valid @RequestBody AuthIdQo qo) {
         authCommandService.deleteAuthUser(qo.getId());
@@ -176,6 +191,7 @@ public class AdminAuthController {
      *
      * @param qo 用户ID参数
      */
+    @Permission(PermCode.USER_RESET)
     @PostMapping("/resetPassword")
     public void resetPassword(@Valid @RequestBody IdQo qo) {
         authCommandService.resetAuthUserPassword(qo.getId());
@@ -199,6 +215,7 @@ public class AdminAuthController {
      * @param qo 查询参数
      * @return 角色分页
      */
+    @Permission(PermCode.ROLE_QUERY)
     @PostMapping("/queryAuthRole")
     public JsonPage<AuthRoleVo> queryAuthRole(@RequestBody AuthRoleQueryQo qo) {
         IPage<AuthRoleEntity> page = authQueryService.queryAuthRole(qo.getCode(), qo.getName(), qo.getPageNum(), qo.getPageSize());
@@ -206,20 +223,31 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增或修改角色
+     * 新增角色
      *
      * @param qo 角色参数
      * @return 角色信息
      */
     @Transactional
-    @PostMapping("/saveOrUpdateAuthRole")
-    public AuthRoleVo saveOrUpdateAuthRole(@Valid @RequestBody AuthRoleQo qo) {
-        AuthRoleEntity role;
-        if (qo.getId() == null) {
-            role = authCommandService.saveAuthRole(qo.getCode(), qo.getName(), qo.getRemark());
-        } else {
-            role = authCommandService.updateAuthRole(qo.getId(), qo.getCode(), qo.getName(), qo.getRemark());
-        }
+    @Permission(PermCode.ROLE_SAVE)
+    @PostMapping("/saveAuthRole")
+    public AuthRoleVo saveAuthRole(@Valid @RequestBody AuthRoleQo qo) {
+        AuthRoleEntity role = authCommandService.saveAuthRole(qo.getCode(), qo.getName(), qo.getRemark());
+        authCommandService.bindRolePerm(role.getId(), qo.getPermIds());
+        return authAssembler.toAuthRoleVo(role);
+    }
+
+    /**
+     * 修改角色
+     *
+     * @param qo 角色参数
+     * @return 角色信息
+     */
+    @Transactional
+    @Permission(PermCode.ROLE_UPDATE)
+    @PostMapping("/updateAuthRole")
+    public AuthRoleVo updateAuthRole(@Valid @RequestBody AuthRoleQo qo) {
+        AuthRoleEntity role = authCommandService.updateAuthRole(qo.getId(), qo.getCode(), qo.getName(), qo.getRemark());
         authCommandService.bindRolePerm(role.getId(), qo.getPermIds());
         return authAssembler.toAuthRoleVo(role);
     }
@@ -229,9 +257,22 @@ public class AdminAuthController {
      *
      * @param qo 角色ID参数
      */
+    @Permission(PermCode.ROLE_DELETE)
     @PostMapping("/deleteAuthRole")
     public void deleteAuthRole(@Valid @RequestBody AuthIdQo qo) {
         authCommandService.deleteAuthRole(qo.getId());
+    }
+
+    /**
+     * 查询权限
+     *
+     * @param qo 查询参数
+     * @return 角色分页
+     */
+    @PostMapping("/getAuthPerm")
+    public AuthPermVo getAuthPerm(@Valid @RequestBody IdQo qo) {
+        AuthPermEntity perm = authQueryService.getAuthPerm(qo.getId());
+        return authAssembler.toAuthPermVo(perm);
     }
 
     /**
@@ -240,6 +281,7 @@ public class AdminAuthController {
      * @param qo 查询参数
      * @return 权限分页
      */
+    @Permission(PermCode.PERM_QUERY)
     @PostMapping("/queryAuthPerm")
     public JsonPage<AuthPermVo> queryAuthPerm(@RequestBody AuthPermQueryQo qo) {
         IPage<AuthPermEntity> page = authQueryService.queryAuthPerm(qo.getCode(), qo.getName(), qo.getType(), qo.getPageNum(), qo.getPageSize());
@@ -271,19 +313,28 @@ public class AdminAuthController {
     }
 
     /**
-     * 新增或修改权限
+     * 新增权限
      *
      * @param qo 权限参数
      * @return 权限信息
      */
-    @PostMapping("/saveOrUpdateAuthPerm")
-    public AuthPermVo saveOrUpdateAuthPerm(@Valid @RequestBody AuthPermQo qo) {
-        AuthPermEntity perm;
-        if (qo.getId() == null) {
-            perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
-        } else {
-            perm = authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
-        }
+    @Permission(PermCode.PERM_SAVE)
+    @PostMapping("/saveAuthPerm")
+    public AuthPermVo saveAuthPerm(@Valid @RequestBody AuthPermQo qo) {
+        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        return authAssembler.toAuthPermVo(perm);
+    }
+
+    /**
+     * 修改权限
+     *
+     * @param qo 权限参数
+     * @return 权限信息
+     */
+    @Permission(PermCode.PERM_UPDATE)
+    @PostMapping("/updateAuthPerm")
+    public AuthPermVo updateAuthPerm(@Valid @RequestBody AuthPermQo qo) {
+        AuthPermEntity perm = authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
         return authAssembler.toAuthPermVo(perm);
     }
 
@@ -292,6 +343,7 @@ public class AdminAuthController {
      *
      * @param qo 权限ID参数
      */
+    @Permission(PermCode.PERM_DELETE)
     @PostMapping("/deleteAuthPerm")
     public void deleteAuthPerm(@Valid @RequestBody AuthIdQo qo) {
         authCommandService.deleteAuthPerm(qo.getId());
