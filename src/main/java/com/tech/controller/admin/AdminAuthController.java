@@ -126,8 +126,8 @@ public class AdminAuthController {
      * @return 按钮权限列表
      */
     @PostMapping("/listAuthButton")
-    public List<AuthPermVo> listAuthButton(@UserId Long userId, @Valid @RequestBody AuthButtonQueryQo qo) {
-        List<AuthPermEntity> buttons = authQueryService.listUserButton(userId, qo.getCode());
+    public List<AuthPermVo> listAuthButton(@UserId Long userId, @Valid @RequestBody AuthPermIdQo qo) {
+        List<AuthPermEntity> buttons = authQueryService.listUserButton(userId, qo.getPermId());
         return authAssembler.toAuthPermVo(buttons);
     }
 
@@ -152,7 +152,7 @@ public class AdminAuthController {
     @Permission(PermCode.USER_QUERY)
     @PostMapping("/queryAuthUser")
     public JsonPage<AuthUserVo> queryAuthUser(@RequestBody AuthUserQueryQo qo) {
-        IPage<AuthUserEntity> page = authQueryService.queryAuthUser(qo.getAccount(), qo.getNickname(), qo.getPageNum(), qo.getPageSize());
+        IPage<AuthUserEntity> page = authQueryService.queryAuthUser(qo.getNickname(), qo.getPageNum(), qo.getPageSize());
         return new JsonPage<>(page.getTotal(), authAssembler.toAuthUserVo(page.getRecords()));
     }
 

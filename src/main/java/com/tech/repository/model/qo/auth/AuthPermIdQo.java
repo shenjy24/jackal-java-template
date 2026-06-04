@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AuthIdQo {
+public class AuthPermIdQo {
     @NotNull(message = ErrorMsg.PARAM_ERROR)
-    private Long id;
+    private Long permId;
 }

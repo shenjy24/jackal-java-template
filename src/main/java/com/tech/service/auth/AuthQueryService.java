@@ -82,11 +82,11 @@ public class AuthQueryService {
         return listUserPerm(userId, PermType.MENU);
     }
 
-    public List<AuthPermEntity> listUserButton(Long userId, String code) {
-        if (StringUtils.isBlank(code)) {
+    public List<AuthPermEntity> listUserButton(Long userId, Long permId) {
+        if (userId == null || permId == null) {
             return Collections.emptyList();
         }
-        AuthPermEntity menu = authPermDao.getByCode(code);
+        AuthPermEntity menu = authPermDao.getById(permId);
         if (menu == null) {
             return Collections.emptyList();
         }
@@ -126,8 +126,8 @@ public class AuthQueryService {
         return authPermDao.getById(permId);
     }
 
-    public IPage<AuthUserEntity> queryAuthUser(String account, String nickname, Integer pageNum, Integer pageSize) {
-        return authUserDao.queryAuthUser(account, nickname, pageNum, pageSize);
+    public IPage<AuthUserEntity> queryAuthUser(String nickname, Integer pageNum, Integer pageSize) {
+        return authUserDao.queryAuthUser(nickname, pageNum, pageSize);
     }
 
     public IPage<AuthRoleEntity> queryAuthRole(String name, Integer pageNum, Integer pageSize) {

@@ -17,5 +17,5 @@ public abstract class LogicEntity extends BaseEntity implements Serializable {
      * 是否删除
      */
     @TableLogic(value = "0", delval = "UNIX_TIMESTAMP()")
-    private Integer deleted;
+    private Long deleted;
 }

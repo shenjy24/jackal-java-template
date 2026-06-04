@@ -7,6 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class AuthUserQueryQo extends PageQo {
-    private String account;
     private String nickname;
 }

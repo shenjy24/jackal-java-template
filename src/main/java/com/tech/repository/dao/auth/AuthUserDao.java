@@ -18,9 +18,8 @@ public class AuthUserDao extends ServiceImpl<AuthUserMapper, AuthUserEntity> {
         return getOne(new LambdaQueryWrapper<AuthUserEntity>().eq(AuthUserEntity::getAccount, account));
     }
 
-    public IPage<AuthUserEntity> queryAuthUser(String account, String nickname, Integer pageNum, Integer pageSize) {
+    public IPage<AuthUserEntity> queryAuthUser(String nickname, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<AuthUserEntity> wrapper = new LambdaQueryWrapper<AuthUserEntity>()
-                .like(StringUtils.isNotBlank(account), AuthUserEntity::getAccount, account)
                 .like(StringUtils.isNotBlank(nickname), AuthUserEntity::getNickname, nickname)
                 .orderByDesc(AuthUserEntity::getId);
         return page(new Page<>(pageNum, pageSize), wrapper);
