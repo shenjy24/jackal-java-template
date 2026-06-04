@@ -10,8 +10,6 @@ import java.util.List;
 public class AuthRoleQo {
     private Long id;
     @NotBlank(message = ErrorMsg.PARAM_ERROR)
-    private String code;
-    @NotBlank(message = ErrorMsg.PARAM_ERROR)
     private String name;
     private String remark;
     private List<Long> permIds;

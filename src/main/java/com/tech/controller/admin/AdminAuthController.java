@@ -127,7 +127,7 @@ public class AdminAuthController {
      */
     @PostMapping("/listAuthButton")
     public List<AuthPermVo> listAuthButton(@UserId Long userId, @Valid @RequestBody AuthButtonQueryQo qo) {
-        List<AuthPermEntity> buttons = authQueryService.listUserButton(userId, qo.getMenuCode());
+        List<AuthPermEntity> buttons = authQueryService.listUserButton(userId, qo.getCode());
         return authAssembler.toAuthPermVo(buttons);
     }
 
@@ -193,7 +193,7 @@ public class AdminAuthController {
      */
     @Permission(PermCode.USER_DELETE)
     @PostMapping("/deleteAuthUser")
-    public void deleteAuthUser(@Valid @RequestBody AuthIdQo qo) {
+    public void deleteAuthUser(@Valid @RequestBody IdQo qo) {
         authCommandService.deleteAuthUser(qo.getId());
     }
 
@@ -229,7 +229,7 @@ public class AdminAuthController {
     @Permission(PermCode.ROLE_QUERY)
     @PostMapping("/queryAuthRole")
     public JsonPage<AuthRoleVo> queryAuthRole(@RequestBody AuthRoleQueryQo qo) {
-        IPage<AuthRoleEntity> page = authQueryService.queryAuthRole(qo.getCode(), qo.getName(), qo.getPageNum(), qo.getPageSize());
+        IPage<AuthRoleEntity> page = authQueryService.queryAuthRole(qo.getName(), qo.getPageNum(), qo.getPageSize());
         return new JsonPage<>(page.getTotal(), authAssembler.toAuthRoleVo(page.getRecords()));
     }
 
@@ -243,7 +243,7 @@ public class AdminAuthController {
     @Permission(PermCode.ROLE_SAVE)
     @PostMapping("/saveAuthRole")
     public AuthRoleVo saveAuthRole(@Valid @RequestBody AuthRoleQo qo) {
-        AuthRoleEntity role = authCommandService.saveAuthRole(qo.getCode(), qo.getName(), qo.getRemark());
+        AuthRoleEntity role = authCommandService.saveAuthRole(qo.getName(), qo.getRemark());
         authCommandService.bindRolePerm(role.getId(), qo.getPermIds());
         return authAssembler.toAuthRoleVo(role);
     }
@@ -258,7 +258,7 @@ public class AdminAuthController {
     @Permission(PermCode.ROLE_UPDATE)
     @PostMapping("/updateAuthRole")
     public AuthRoleVo updateAuthRole(@Valid @RequestBody AuthRoleQo qo) {
-        AuthRoleEntity role = authCommandService.updateAuthRole(qo.getId(), qo.getCode(), qo.getName(), qo.getRemark());
+        AuthRoleEntity role = authCommandService.updateAuthRole(qo.getId(), qo.getName(), qo.getRemark());
         authCommandService.bindRolePerm(role.getId(), qo.getPermIds());
         return authAssembler.toAuthRoleVo(role);
     }
@@ -270,7 +270,7 @@ public class AdminAuthController {
      */
     @Permission(PermCode.ROLE_DELETE)
     @PostMapping("/deleteAuthRole")
-    public void deleteAuthRole(@Valid @RequestBody AuthIdQo qo) {
+    public void deleteAuthRole(@Valid @RequestBody IdQo qo) {
         authCommandService.deleteAuthRole(qo.getId());
     }
 
@@ -356,7 +356,7 @@ public class AdminAuthController {
      */
     @Permission(PermCode.PERM_DELETE)
     @PostMapping("/deleteAuthPerm")
-    public void deleteAuthPerm(@Valid @RequestBody AuthIdQo qo) {
+    public void deleteAuthPerm(@Valid @RequestBody IdQo qo) {
         authCommandService.deleteAuthPerm(qo.getId());
     }
 

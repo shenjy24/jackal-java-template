@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class AuthButtonQueryQo {
     @NotBlank(message = ErrorMsg.PARAM_ERROR)
-    private String menuCode;
+    private String code;
 }

@@ -23,9 +23,8 @@ public class AuthRoleDao extends ServiceImpl<AuthRoleMapper, AuthRoleEntity> {
         return baseMapper.selectList(new LambdaQueryWrapper<AuthRoleEntity>().in(AuthRoleEntity::getId, roleIds));
     }
 
-    public IPage<AuthRoleEntity> queryAuthRole(String code, String name, Integer pageNum, Integer pageSize) {
+    public IPage<AuthRoleEntity> queryAuthRole(String name, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<AuthRoleEntity> wrapper = new LambdaQueryWrapper<AuthRoleEntity>()
-                .like(StringUtils.isNotBlank(code), AuthRoleEntity::getCode, code)
                 .like(StringUtils.isNotBlank(name), AuthRoleEntity::getName, name)
                 .orderByDesc(AuthRoleEntity::getId);
         return page(new Page<>(pageNum, pageSize), wrapper);

@@ -44,11 +44,10 @@ public class AuthAssembler {
         if (role == null) {
             return null;
         }
-        AuthRoleVo vo = new AuthRoleVo();
-        vo.setId(role.getId());
-        vo.setCode(role.getCode());
-        vo.setName(role.getName());
-        vo.setRemark(role.getRemark());
+        AuthRoleVo vo = new AuthRoleVo()
+                .setId(role.getId())
+                .setName(role.getName())
+                .setRemark(role.getRemark());
         return vo;
     }
 

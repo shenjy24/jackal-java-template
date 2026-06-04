@@ -146,23 +146,20 @@ public class AuthCommandService {
         authUserDao.updateById(user);
     }
 
-    public AuthRoleEntity saveAuthRole(String code, String name, String remark) {
+    public AuthRoleEntity saveAuthRole(String name, String remark) {
         AuthRoleEntity role = new AuthRoleEntity()
-                .setCode(code)
                 .setName(name)
                 .setRemark(remark);
         authRoleDao.save(role);
         return role;
     }
 
-    public AuthRoleEntity updateAuthRole(Long id, String code, String name, String remark) {
+    public AuthRoleEntity updateAuthRole(Long id, String name, String remark) {
         AuthRoleEntity role = authRoleDao.getById(id);
         if (role == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
-        role.setCode(code);
-        role.setName(name);
-        role.setRemark(remark);
+        role.setName(name).setRemark(remark);
         authRoleDao.updateById(role);
         return role;
     }

@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @TableName("auth_role")
 public class AuthRoleEntity extends LogicEntity {
-    private String code;
     private String name;
     private String remark;
 }

@@ -26,7 +26,6 @@ CREATE TABLE `auth_user_token`
 
 CREATE TABLE IF NOT EXISTS `auth_role` (
   `id`          bigint          NOT NULL COMMENT '角色ID',
-  `code`        varchar(50)     NOT NULL COMMENT '角色编码',
   `name`        varchar(100)    NOT NULL COMMENT '角色名称',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
   `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
