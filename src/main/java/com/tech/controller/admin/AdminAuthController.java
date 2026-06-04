@@ -58,14 +58,37 @@ public class AdminAuthController {
     }
 
     /**
-     * 获取用户信息
+     * 获取当前用户信息
      *
      * @param userId 用户ID
      * @return 用户信息
      */
-    @PostMapping("/getUser")
-    public AuthUserVo getUser(@UserId Long userId) {
+    @PostMapping("/getAuthUser")
+    public AuthUserVo getAuthUser(@UserId Long userId) {
         AuthUserEntity user = authQueryService.getAuthUser(userId);
+        return authAssembler.toAuthUserVo(user);
+    }
+
+    /**
+     * 修改当前用户密码
+     *
+     * @param userId 当前用户ID
+     * @param qo     密码参数
+     */
+    @PostMapping("/updatePassword")
+    public void updatePassword(@UserId Long userId, @Valid @RequestBody AuthUserPasswordUpdateQo qo) {
+        authCommandService.updateAuthUserPassword(userId, qo.getOldPassword(), qo.getNewPassword());
+    }
+
+    /**
+     * 修改当前用户信息
+     *
+     * @param qo 用户参数
+     * @return 用户信息
+     */
+    @PostMapping("/updateAuthUser")
+    public AuthUserVo updateAuthUser(@UserId Long userId, @Valid @RequestBody AuthUserUpdateQo qo) {
+        AuthUserEntity user = authCommandService.updateAuthUser(userId, qo.getNickname(), qo.getAvatar(), qo.getAccount());
         return authAssembler.toAuthUserVo(user);
     }
 
@@ -95,6 +118,18 @@ public class AdminAuthController {
     }
 
     /**
+     * 根据ID查询后台用户
+     *
+     * @param qo 查询参数
+     * @return 用户分页
+     */
+    @PostMapping("/getAuthUserById")
+    public AuthUserVo getAuthUser(@RequestBody IdQo qo) {
+        AuthUserEntity user = authQueryService.getAuthUser(qo.getId());
+        return authAssembler.toAuthUserVo(user);
+    }
+
+    /**
      * 分页查询后台用户
      *
      * @param qo 查询参数
@@ -103,7 +138,7 @@ public class AdminAuthController {
     @PostMapping("/queryAuthUser")
     public JsonPage<AuthUserVo> queryAuthUser(@RequestBody AuthUserQueryQo qo) {
         IPage<AuthUserEntity> page = authQueryService.queryAuthUser(qo.getAccount(), qo.getNickname(), qo.getPageNum(), qo.getPageSize());
-        return new JsonPage<>(page.getTotal(), authAssembler.toAuthUserVoList(page.getRecords()));
+        return new JsonPage<>(page.getTotal(), authAssembler.toAuthUserVo(page.getRecords()));
     }
 
     /**
@@ -117,7 +152,7 @@ public class AdminAuthController {
     public AuthUserVo saveOrUpdateAuthUser(@Valid @RequestBody AuthUserQo qo) {
         AuthUserEntity user;
         if (qo.getId() == null) {
-            user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount(), qo.getPassword());
+            user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount());
         } else {
             user = authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
         }
@@ -136,14 +171,25 @@ public class AdminAuthController {
     }
 
     /**
-     * 修改当前用户密码
+     * 重置用户密码
      *
-     * @param userId 当前用户ID
-     * @param qo     密码参数
+     * @param qo 用户ID参数
      */
-    @PostMapping("/updatePassword")
-    public void updatePassword(@UserId Long userId, @Valid @RequestBody AuthUserPasswordUpdateQo qo) {
-        authCommandService.updateAuthUserPassword(userId, qo.getOldPassword(), qo.getNewPassword());
+    @PostMapping("/resetPassword")
+    public void resetPassword(@Valid @RequestBody IdQo qo) {
+        authCommandService.resetAuthUserPassword(qo.getId());
+    }
+
+    /**
+     * 根据ID查询角色
+     *
+     * @param qo 查询参数
+     * @return 角色信息
+     */
+    @PostMapping("/getAuthRole")
+    public AuthRoleVo getAuthRole(@RequestBody IdQo qo) {
+        AuthRoleEntity role = authQueryService.getAuthRole(qo.getId());
+        return authAssembler.toAuthRoleVo(role);
     }
 
     /**
@@ -155,7 +201,7 @@ public class AdminAuthController {
     @PostMapping("/queryAuthRole")
     public JsonPage<AuthRoleVo> queryAuthRole(@RequestBody AuthRoleQueryQo qo) {
         IPage<AuthRoleEntity> page = authQueryService.queryAuthRole(qo.getCode(), qo.getName(), qo.getPageNum(), qo.getPageSize());
-        return new JsonPage<>(page.getTotal(), authAssembler.toAuthRoleVoList(page.getRecords()));
+        return new JsonPage<>(page.getTotal(), authAssembler.toAuthRoleVo(page.getRecords()));
     }
 
     /**

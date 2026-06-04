@@ -37,7 +37,7 @@ public class AuthAssembler {
         return authUserVo;
     }
 
-    public List<AuthUserVo> toAuthUserVoList(List<AuthUserEntity> users) {
+    public List<AuthUserVo> toAuthUserVo(List<AuthUserEntity> users) {
         if (CollectionUtils.isEmpty(users)) {
             return Collections.emptyList();
         }
@@ -56,7 +56,7 @@ public class AuthAssembler {
         return vo;
     }
 
-    public List<AuthRoleVo> toAuthRoleVoList(List<AuthRoleEntity> roles) {
+    public List<AuthRoleVo> toAuthRoleVo(List<AuthRoleEntity> roles) {
         if (CollectionUtils.isEmpty(roles)) {
             return Collections.emptyList();
         }

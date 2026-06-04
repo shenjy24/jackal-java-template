@@ -1,5 +1,6 @@
 package com.tech.service.auth;
 
+import com.tech.common.constant.Constants;
 import com.tech.common.enums.ErrorCode;
 import com.tech.config.response.bean.BizException;
 import com.tech.repository.dao.auth.*;
@@ -66,8 +67,8 @@ public class AuthCommandService {
         authUserTokenDao.updateById(token);
     }
 
-    public AuthUserEntity saveAuthUser(String nickname, String avatar, String account, String password) {
-        if (StringUtils.isBlank(password)) {
+    public AuthUserEntity saveAuthUser(String nickname, String avatar, String account) {
+        if (StringUtils.isBlank(account)) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
         AuthUserEntity existUser = authUserDao.getByAccount(account);
@@ -78,7 +79,7 @@ public class AuthCommandService {
                 .setNickname(nickname)
                 .setAvatar(avatar)
                 .setAccount(account)
-                .setPassword(CryptoUtil.encode(password));
+                .setPassword(CryptoUtil.encode(Constants.DEFAULT_PASSWORD));
         authUserDao.save(user);
         return user;
     }
@@ -113,6 +114,18 @@ public class AuthCommandService {
             throw new BizException(ErrorCode.USER_ERROR4);
         }
         user.setPassword(CryptoUtil.encode(newPassword));
+        authUserDao.updateById(user);
+    }
+
+    public void resetAuthUserPassword(Long userId) {
+        if (userId == null) {
+            throw new BizException(ErrorCode.PARAM_ERROR);
+        }
+        AuthUserEntity user = authUserDao.getById(userId);
+        if (user == null) {
+            throw new BizException(ErrorCode.USER_ERROR3);
+        }
+        user.setPassword(CryptoUtil.encode(Constants.DEFAULT_PASSWORD));
         authUserDao.updateById(user);
     }
 
