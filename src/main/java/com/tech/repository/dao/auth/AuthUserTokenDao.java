@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthUserTokenDao extends ServiceImpl<AuthUserTokenMapper, AuthUserTokenEntity> {
-    public AuthUserTokenEntity getByAdminUserId(Long adminUserId) {
+    public AuthUserTokenEntity getAuthUserToken(Long adminUserId) {
         if (adminUserId == null) {
             return null;
         }
         return getOne(new LambdaQueryWrapper<AuthUserTokenEntity>().eq(AuthUserTokenEntity::getUserId, adminUserId));
     }
 
-    public AuthUserTokenEntity getByToken(String token) {
+    public AuthUserTokenEntity getAuthUserToken(String token) {
         if (StringUtils.isEmpty(token)) {
             return null;
         }

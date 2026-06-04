@@ -43,11 +43,28 @@ public class AuthCommandService {
         return adminUser;
     }
 
+    /**
+     * 用户登出
+     *
+     * @param userId 用户ID
+     */
+    public void logoff(Long userId) {
+        if (userId == null) {
+            return;
+        }
+        AuthUserTokenEntity loginToken = authUserTokenDao.getAuthUserToken(userId);
+        if (loginToken == null) {
+            return;
+        }
+        loginToken.setToken("").setExpireTime(TimeUtil.currentTimestamp());
+        authUserTokenDao.updateById(loginToken);
+    }
+
     private AuthUserTokenEntity saveOrUpdateToken(Long adminUserId) {
         if (adminUserId == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
-        AuthUserTokenEntity token = authUserTokenDao.getByAdminUserId(adminUserId);
+        AuthUserTokenEntity token = authUserTokenDao.getAuthUserToken(adminUserId);
         String tokenValue = IdUtil.uuid();
         Timestamp expireTime = TimeUtil.tokenExpireTime();
         if (token == null) {

@@ -61,6 +61,16 @@ public class AdminAuthController {
     }
 
     /**
+     * 用户登出
+     *
+     * @param userId 用户ID
+     */
+    @PostMapping("/logoff")
+    public void logoff(@UserId Long userId) {
+        authCommandService.logoff(userId);
+    }
+
+    /**
      * 获取当前用户信息
      *
      * @param userId 用户ID
@@ -81,6 +91,7 @@ public class AdminAuthController {
     @PostMapping("/updatePassword")
     public void updatePassword(@UserId Long userId, @Valid @RequestBody AuthUserPasswordUpdateQo qo) {
         authCommandService.updateAuthUserPassword(userId, qo.getOldPassword(), qo.getNewPassword());
+        authCommandService.logoff(userId);
     }
 
     /**

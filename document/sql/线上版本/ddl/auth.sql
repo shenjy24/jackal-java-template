@@ -38,10 +38,13 @@ CREATE TABLE IF NOT EXISTS `auth_role` (
 
 CREATE TABLE IF NOT EXISTS `auth_perm` (
   `id`          bigint          NOT NULL COMMENT '权限ID',
-  `code`        varchar(128)    NOT NULL COMMENT '权限编码',
-  `name`        varchar(128)    NOT NULL COMMENT '权限名称',
-  `type`        tinyint         NOT NULL COMMENT '权限类型 1.按钮 2.菜单',
   `parent_id`   bigint          NOT NULL DEFAULT 0 COMMENT '父级权限ID',
+  `code`        varchar(50)     NOT NULL COMMENT '权限编码',
+  `name`        varchar(50)     NOT NULL COMMENT '权限名称',
+  `type`        tinyint         NOT NULL COMMENT '权限类型 1.菜单 2.按钮',
+  `icon`        varchar(50)     NOT NULL COMMENT '图标',
+  `path`        varchar(50)     NOT NULL COMMENT '链接地址',
+  `sort`        int             NOT NULL COMMENT '链接地址',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
   `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
   `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

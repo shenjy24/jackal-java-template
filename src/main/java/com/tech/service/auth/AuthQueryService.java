@@ -32,7 +32,7 @@ public class AuthQueryService {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        return authUserTokenDao.getByToken(token);
+        return authUserTokenDao.getAuthUserToken(token);
     }
 
     public boolean isExpiredToken(AuthUserTokenEntity token) {
