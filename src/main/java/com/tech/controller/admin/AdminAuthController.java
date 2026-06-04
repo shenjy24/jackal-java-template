@@ -66,8 +66,8 @@ public class AdminAuthController {
      * @param userId 用户ID
      * @return 用户信息
      */
-    @PostMapping("/getAuthUser")
-    public AuthUserVo getAuthUser(@UserId Long userId) {
+    @PostMapping("/getUser")
+    public AuthUserVo getUser(@UserId Long userId) {
         AuthUserEntity user = authQueryService.getAuthUser(userId);
         return authAssembler.toAuthUserVo(user);
     }
@@ -89,8 +89,8 @@ public class AdminAuthController {
      * @param qo 用户参数
      * @return 用户信息
      */
-    @PostMapping("/updateAuthUser")
-    public AuthUserVo updateAuthUser(@UserId Long userId, @Valid @RequestBody AuthUserUpdateQo qo) {
+    @PostMapping("/updateUser")
+    public AuthUserVo updateUser(@UserId Long userId, @Valid @RequestBody AuthUserUpdateQo qo) {
         AuthUserEntity user = authCommandService.updateAuthUser(userId, qo.getNickname(), qo.getAvatar(), qo.getAccount());
         return authAssembler.toAuthUserVo(user);
     }
@@ -126,7 +126,7 @@ public class AdminAuthController {
      * @param qo 查询参数
      * @return 用户分页
      */
-    @PostMapping("/getAuthUserById")
+    @PostMapping("/getAuthUser")
     public AuthUserVo getAuthUser(@Valid @RequestBody IdQo qo) {
         AuthUserEntity user = authQueryService.getAuthUser(qo.getId());
         return authAssembler.toAuthUserVo(user);
