@@ -1,4 +1,4 @@
-package com.tech.repository.entity.user;
+package com.tech.repository.entity.auth;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.tech.repository.entity.BaseEntity;
@@ -9,22 +9,13 @@ import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
-@TableName("user_token")
-public class UserTokenEntity extends BaseEntity {
-    /**
-     * 用户ID
-     */
+@TableName("auth_user_token")
+public class AuthUserTokenEntity extends BaseEntity {
     private Long userId;
-    /**
-     * token
-     */
     private String token;
-    /**
-     * 过期时间
-     */
     private Timestamp expireTime;
 
-    public UserTokenEntity(Long userId, String token, Timestamp expireTime) {
+    public AuthUserTokenEntity(Long userId, String token, Timestamp expireTime) {
         this.userId = userId;
         this.token = token;
         this.expireTime = expireTime;

@@ -5,9 +5,10 @@ import com.tech.repository.entity.LogicEntity;
 import lombok.Data;
 
 @Data
-@TableName("auth_role")
-public class AuthRoleEntity extends LogicEntity {
+@TableName("auth_perm")
+public class AuthPermEntity extends LogicEntity {
     private String code;
     private String name;
+    private Integer type;
     private String remark;
 }

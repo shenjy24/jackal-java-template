@@ -37,7 +37,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
             return true;
         }
         Long userId = (Long) request.getAttribute(Constants.REQ_ATT_USER);
-        Set<String> userPerms = authQueryService.listUserPermission(userId, PermType.API);
+        Set<String> userPerms = authQueryService.listUserPerm(userId, PermType.API);
         String[] needPerms = permission.value();
         boolean passed = permission.requireAll()
                 ? Arrays.stream(needPerms).allMatch(userPerms::contains)

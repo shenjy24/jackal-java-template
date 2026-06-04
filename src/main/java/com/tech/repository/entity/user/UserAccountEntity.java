@@ -1,7 +1,6 @@
 package com.tech.repository.entity.user;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.tech.repository.entity.BaseEntity;
 import lombok.Data;
@@ -18,12 +17,6 @@ import lombok.Data;
 @Data
 @TableName("user_account")
 public class UserAccountEntity extends BaseEntity {
-
-    /**
-     * 逻辑主键
-     */
-    @TableId("account_id")
-    private Long accountId;
 
     /**
      * 用户ID

@@ -1,0 +1,1 @@
+insert into `auth_user` (`id`, `nickname`, `avatar`, `account`, `password`) values (1, 'admin', 'https://ielts-dev.oss-cn-hangzhou.aliyuncs.com/image/b5c033f289cb48799185339148fd5361.jpeg', 'admin', '$2a$10$g2zXjMERqberEn9nG98RKO/mlXTtMPiMGwmJxGwu2EDoqszGK2EGq');

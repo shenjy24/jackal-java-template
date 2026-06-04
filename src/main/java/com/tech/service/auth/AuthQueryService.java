@@ -22,26 +22,26 @@ public class AuthQueryService {
 
     private final AuthRoleDao authRoleDao;
     private final AuthUserRoleDao authUserRoleDao;
-    private final AuthPermissionDao authPermissionDao;
-    private final AuthRolePermissionDao authRolePermissionDao;
-    private final AdminUserDao adminUserDao;
-    private final AdminUserTokenDao adminUserTokenDao;
+    private final AuthPermDao authPermDao;
+    private final AuthRolePermDao authRolePermDao;
+    private final AuthUserDao authUserDao;
+    private final AuthUserTokenDao authUserTokenDao;
 
-    public AdminUserTokenEntity getTokenByToken(String token) {
+    public AuthUserTokenEntity getTokenByToken(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        return adminUserTokenDao.getByToken(token);
+        return authUserTokenDao.getByToken(token);
     }
 
-    public boolean isExpiredToken(AdminUserTokenEntity token) {
+    public boolean isExpiredToken(AuthUserTokenEntity token) {
         if (token == null || token.getExpireTime() == null) {
             return true;
         }
         return TimeUtil.currentTimestamp().compareTo(token.getExpireTime()) > 0;
     }
 
-    public Set<String> listUserPermission(Long userId, PermType permType) {
+    public Set<String> listUserPerm(Long userId, PermType permType) {
         Set<String> codes = new HashSet<>();
         if (userId == null) {
             return codes;
@@ -55,21 +55,28 @@ public class AuthQueryService {
         if (CollectionUtils.isEmpty(roles)) {
             return codes;
         }
-        roleIds = roles.stream().map(AuthRoleEntity::getRoleId).collect(Collectors.toSet());
-        List<AuthRolePermissionEntity> rolePerms = authRolePermissionDao.listAuthRolePermission(roleIds);
+        roleIds = roles.stream().map(AuthRoleEntity::getId).collect(Collectors.toSet());
+        List<AuthRolePermEntity> rolePerms = authRolePermDao.listAuthRolePermission(roleIds);
         if (CollectionUtils.isEmpty(rolePerms)) {
             return codes;
         }
-        Set<Long> permIds = rolePerms.stream().map(AuthRolePermissionEntity::getPermId).collect(Collectors.toSet());
+        Set<Long> permIds = rolePerms.stream().map(AuthRolePermEntity::getPermId).collect(Collectors.toSet());
         if (permIds.isEmpty()) {
             return codes;
         }
-        List<AuthPermissionEntity> perms = authPermissionDao.listAuthPermission(permIds);
+        List<AuthPermEntity> perms = authPermDao.listAuthPermission(permIds);
         if (permType == null) {
-            return perms.stream().map(AuthPermissionEntity::getCode).collect(Collectors.toSet());
+            return perms.stream().map(AuthPermEntity::getCode).collect(Collectors.toSet());
         }
         return perms.stream().filter(e -> permType.getCode().equals(e.getType()))
-                .map(AuthPermissionEntity::getCode)
+                .map(AuthPermEntity::getCode)
                 .collect(Collectors.toSet());
+    }
+
+    public AuthUserEntity getAuthUser(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return authUserDao.getById(userId);
     }
 }

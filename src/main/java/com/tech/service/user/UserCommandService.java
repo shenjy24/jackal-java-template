@@ -62,7 +62,7 @@ public class UserCommandService {
     }
 
     public void updateUserToken(UserTokenEntity userToken) {
-        if (userToken == null || userToken.getTokenId() == null) {
+        if (userToken == null || userToken.getId() == null) {
             return;
         }
         userTokenDao.updateById(userToken);

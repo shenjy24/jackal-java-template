@@ -2,10 +2,10 @@ package com.tech.service.auth;
 
 import com.tech.common.enums.ErrorCode;
 import com.tech.config.response.bean.BizException;
-import com.tech.repository.dao.auth.AdminUserDao;
-import com.tech.repository.dao.auth.AdminUserTokenDao;
-import com.tech.repository.entity.auth.AdminUserEntity;
-import com.tech.repository.entity.auth.AdminUserTokenEntity;
+import com.tech.repository.dao.auth.AuthUserDao;
+import com.tech.repository.dao.auth.AuthUserTokenDao;
+import com.tech.repository.entity.auth.AuthUserEntity;
+import com.tech.repository.entity.auth.AuthUserTokenEntity;
 import com.tech.util.CookieUtil;
 import com.tech.util.CryptoUtil;
 import com.tech.util.IdUtil;
@@ -21,40 +21,40 @@ import java.sql.Timestamp;
 @RequiredArgsConstructor
 public class AuthCommandService {
 
-    private final AdminUserDao adminUserDao;
-    private final AdminUserTokenDao adminUserTokenDao;
+    private final AuthUserDao authUserDao;
+    private final AuthUserTokenDao authUserTokenDao;
 
-    public AdminUserEntity loginByAccount(String account, String password) {
-        AdminUserEntity adminUser = adminUserDao.getByAccount(account);
+    public AuthUserEntity loginByAccount(String account, String password) {
+        AuthUserEntity adminUser = authUserDao.getByAccount(account);
         if (adminUser == null || CryptoUtil.notMatches(password, adminUser.getPassword())) {
             throw new BizException(ErrorCode.USER_ERROR4);
         }
-        AdminUserTokenEntity token = saveOrUpdateToken(adminUser.getUserId());
+        AuthUserTokenEntity token = saveOrUpdateToken(adminUser.getId());
         CookieUtil.setCookie(token.getToken());
         return adminUser;
     }
 
-    private AdminUserTokenEntity saveOrUpdateToken(Long adminUserId) {
+    private AuthUserTokenEntity saveOrUpdateToken(Long adminUserId) {
         if (adminUserId == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
-        AdminUserTokenEntity token = adminUserTokenDao.getByAdminUserId(adminUserId);
+        AuthUserTokenEntity token = authUserTokenDao.getByAdminUserId(adminUserId);
         String tokenValue = IdUtil.uuid();
         Timestamp expireTime = TimeUtil.tokenExpireTime();
         if (token == null) {
-            token = new AdminUserTokenEntity(adminUserId, tokenValue, expireTime);
-            adminUserTokenDao.save(token);
+            token = new AuthUserTokenEntity(adminUserId, tokenValue, expireTime);
+            authUserTokenDao.save(token);
         } else {
             token.setToken(tokenValue).setExpireTime(expireTime);
-            adminUserTokenDao.updateById(token);
+            authUserTokenDao.updateById(token);
         }
         return token;
     }
 
-    public void updateToken(AdminUserTokenEntity token) {
-        if (token == null || token.getTokenId() == null) {
+    public void updateToken(AuthUserTokenEntity token) {
+        if (token == null || token.getId() == null) {
             return;
         }
-        adminUserTokenDao.updateById(token);
+        authUserTokenDao.updateById(token);
     }
 }

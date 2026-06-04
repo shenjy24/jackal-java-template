@@ -1,12 +1,19 @@
-package com.tech.repository.entity.user;
+package com.tech.repository.model.vo.user;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.tech.repository.entity.LogicEntity;
 import lombok.Data;
 
+/**
+ * UserVo
+ *
+ * @author shenjy
+ * @since 2023/12/18 09:57
+ */
 @Data
-@TableName("user")
-public class UserEntity extends LogicEntity {
+public class UserVo {
+    /**
+     * 用户ID
+     */
+    private Long id;
     /**
      * 用户昵称
      */

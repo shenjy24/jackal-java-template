@@ -1,13 +1,13 @@
-package com.tech.controller.web;
+package com.tech.controller.admin;
 
 import com.tech.common.annotation.auth.Anonymous;
 import com.tech.common.annotation.auth.UserId;
+import com.tech.repository.entity.auth.AuthUserEntity;
 import com.tech.repository.model.qo.user.LoginAccountQo;
-import com.tech.repository.model.vo.user.UserVo;
-import com.tech.repository.entity.user.UserEntity;
-import com.tech.service.user.UserAssembler;
-import com.tech.service.user.UserCommandService;
-import com.tech.service.user.UserQueryService;
+import com.tech.repository.model.vo.auth.AuthUserVo;
+import com.tech.service.auth.AuthAssembler;
+import com.tech.service.auth.AuthCommandService;
+import com.tech.service.auth.AuthQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * UserController
+ * 管理后台用户控制器
  *
  * @author shenjy
  * @version 1.0
@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/web/user")
-public class UserController {
+@RequestMapping("/admin/auth")
+public class AdminAuthController {
 
-    private final UserQueryService userQueryService;
-    private final UserCommandService userCommandService;
-    private final UserAssembler userAssembler;
+    private final AuthQueryService authQueryService;
+    private final AuthCommandService authCommandService;
+    private final AuthAssembler authAssembler;
 
     /**
      * 账号密码登陆
@@ -41,9 +41,9 @@ public class UserController {
      */
     @Anonymous
     @PostMapping("/loginByAccount")
-    public UserVo loginByAccount(@Valid @RequestBody LoginAccountQo qo) {
-        UserEntity user = userCommandService.loginByAccount(qo.getAccount(), qo.getPassword());
-        return userAssembler.toUserVo(user);
+    public AuthUserVo loginByAccount(@Valid @RequestBody LoginAccountQo qo) {
+        AuthUserEntity user = authCommandService.loginByAccount(qo.getAccount(), qo.getPassword());
+        return authAssembler.toAuthUserVo(user);
     }
 
     /**
@@ -53,9 +53,8 @@ public class UserController {
      * @return 用户信息
      */
     @PostMapping("/getUser")
-    public UserVo getUser(@UserId Long userId) {
-        UserEntity user = userQueryService.getUser(userId);
-        return userAssembler.toUserVo(user);
+    public AuthUserVo getUser(@UserId Long userId) {
+        AuthUserEntity user = authQueryService.getAuthUser(userId);
+        return authAssembler.toAuthUserVo(user);
     }
-
 }
