@@ -10,6 +10,9 @@ public class AuthMenuVo {
     private Long parentId;
     private String code;
     private String name;
+    private String icon;
+    private String path;
+    private Integer sort;
     private String remark;
     private Integer checked;
     private List<AuthMenuVo> children;

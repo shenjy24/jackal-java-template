@@ -332,7 +332,7 @@ public class AdminAuthController {
     @Permission(PermCode.PERM_SAVE)
     @PostMapping("/saveAuthPerm")
     public AuthPermVo saveAuthPerm(@Valid @RequestBody AuthPermQo qo) {
-        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        AuthPermEntity perm = authCommandService.saveAuthPerm(qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getIcon(), qo.getPath(), qo.getSort(), qo.getRemark());
         return authAssembler.toAuthPermVo(perm);
     }
 
@@ -345,7 +345,7 @@ public class AdminAuthController {
     @Permission(PermCode.PERM_UPDATE)
     @PostMapping("/updateAuthPerm")
     public AuthPermVo updateAuthPerm(@Valid @RequestBody AuthPermQo qo) {
-        AuthPermEntity perm = authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getRemark());
+        AuthPermEntity perm = authCommandService.updateAuthPerm(qo.getId(), qo.getParentId(), qo.getCode(), qo.getName(), qo.getType(), qo.getIcon(), qo.getPath(), qo.getSort(), qo.getRemark());
         return authAssembler.toAuthPermVo(perm);
     }
 

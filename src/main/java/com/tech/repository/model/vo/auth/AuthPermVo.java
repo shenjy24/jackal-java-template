@@ -9,5 +9,8 @@ public class AuthPermVo {
     private String code;
     private String name;
     private Integer type;
+    private String icon;
+    private String path;
+    private Integer sort;
     private String remark;
 }

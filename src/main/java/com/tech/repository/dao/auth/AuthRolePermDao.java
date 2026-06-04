@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthRolePermDao extends ServiceImpl<AuthRolePermMapper, AuthRolePermEntity> {
-    public List<AuthRolePermEntity> listAuthRolePermission(Set<Long> roleIds) {
+
+    public List<AuthRolePermEntity> listAuthRolePerm(Set<Long> roleIds) {
         if (CollectionUtils.isEmpty(roleIds)) {
             return Collections.emptyList();
         }

@@ -9,11 +9,13 @@ import lombok.Data;
 public class AuthPermQo {
     private Long id;
     private Long parentId = 0L;
-    @NotBlank(message = ErrorMsg.PARAM_ERROR)
     private String code;
     @NotBlank(message = ErrorMsg.PARAM_ERROR)
     private String name;
     @NotNull(message = ErrorMsg.PARAM_ERROR)
     private Integer type;
+    private String icon;
+    private String path;
+    private Integer sort;
     private String remark;
 }

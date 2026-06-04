@@ -27,11 +27,10 @@ public class AuthPermDao extends ServiceImpl<AuthPermMapper, AuthPermEntity> {
         if (CollectionUtils.isEmpty(permIds)) {
             return Collections.emptyList();
         }
-        return listByIds(permIds);
-    }
-
-    public List<AuthPermEntity> listAuthPerm() {
-        return list(new LambdaQueryWrapper<AuthPermEntity>().orderByAsc(AuthPermEntity::getParentId).orderByAsc(AuthPermEntity::getCode));
+        return list(new LambdaQueryWrapper<AuthPermEntity>()
+                .in(AuthPermEntity::getId, permIds)
+                .orderByAsc(AuthPermEntity::getSort)
+                .orderByAsc(AuthPermEntity::getId));
     }
 
     public IPage<AuthPermEntity> queryAuthPerm(String code, String name, Integer type, Integer pageNum, Integer pageSize) {
@@ -39,7 +38,8 @@ public class AuthPermDao extends ServiceImpl<AuthPermMapper, AuthPermEntity> {
                 .like(StringUtils.isNotBlank(code), AuthPermEntity::getCode, code)
                 .like(StringUtils.isNotBlank(name), AuthPermEntity::getName, name)
                 .eq(type != null, AuthPermEntity::getType, type)
-                .orderByDesc(AuthPermEntity::getId);
+                .orderByAsc(AuthPermEntity::getSort)
+                .orderByAsc(AuthPermEntity::getId);
         return page(new Page<>(pageNum, pageSize), wrapper);
     }
 }

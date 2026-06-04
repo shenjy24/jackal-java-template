@@ -174,27 +174,33 @@ public class AuthCommandService {
         authRolePermDao.removeByRoleId(roleId);
     }
 
-    public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String remark) {
+    public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String icon, String path, Integer sort, String remark) {
         AuthPermEntity perm = new AuthPermEntity()
                 .setParentId(parentId)
                 .setCode(code)
                 .setName(name)
                 .setType(type)
+                .setIcon(icon)
+                .setPath(path)
+                .setSort(sort)
                 .setRemark(remark);
         authPermDao.save(perm);
         return perm;
     }
 
-    public AuthPermEntity updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String remark) {
+    public AuthPermEntity updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String icon, String path, Integer sort, String remark) {
         AuthPermEntity perm = authPermDao.getById(id);
         if (perm == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
-        perm.setParentId(parentId);
-        perm.setCode(code);
-        perm.setName(name);
-        perm.setType(type);
-        perm.setRemark(remark);
+        perm.setParentId(parentId)
+            .setCode(code)
+            .setName(name)
+            .setType(type)
+            .setIcon(icon)
+            .setPath(path)
+            .setSort(sort)
+            .setRemark(remark);
         authPermDao.updateById(perm);
         return perm;
     }

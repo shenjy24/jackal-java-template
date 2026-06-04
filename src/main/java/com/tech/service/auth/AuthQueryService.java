@@ -62,7 +62,7 @@ public class AuthQueryService {
             return Collections.emptyList();
         }
         roleIds = roles.stream().map(AuthRoleEntity::getId).collect(Collectors.toSet());
-        List<AuthRolePermEntity> rolePerms = authRolePermDao.listAuthRolePermission(roleIds);
+        List<AuthRolePermEntity> rolePerms = authRolePermDao.listAuthRolePerm(roleIds);
         if (CollectionUtils.isEmpty(rolePerms)) {
             return Collections.emptyList();
         }
@@ -96,7 +96,7 @@ public class AuthQueryService {
     }
 
     public List<AuthPermEntity> listAuthPerm() {
-        return authPermDao.listAuthPerm();
+        return authPermDao.list();
     }
 
     public Set<Long> listRolePermId(Long roleId) {

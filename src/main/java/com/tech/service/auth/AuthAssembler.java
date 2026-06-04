@@ -25,12 +25,12 @@ public class AuthAssembler {
         if (user == null) {
             return null;
         }
-        AuthUserVo authUserVo = new AuthUserVo()
+        AuthUserVo vo = new AuthUserVo()
                 .setId(user.getId())
                 .setNickname(user.getNickname())
                 .setAvatar(user.getAvatar())
                 .setAccount(user.getAccount());
-        return authUserVo;
+        return vo;
     }
 
     public List<AuthUserVo> toAuthUserVo(List<AuthUserEntity> users) {
@@ -63,13 +63,16 @@ public class AuthAssembler {
         if (perm == null) {
             return null;
         }
-        AuthPermVo vo = new AuthPermVo();
-        vo.setId(perm.getId());
-        vo.setParentId(perm.getParentId());
-        vo.setCode(perm.getCode());
-        vo.setName(perm.getName());
-        vo.setType(perm.getType());
-        vo.setRemark(perm.getRemark());
+        AuthPermVo vo = new AuthPermVo()
+                .setId(perm.getId())
+                .setParentId(perm.getParentId())
+                .setCode(perm.getCode())
+                .setName(perm.getName())
+                .setType(perm.getType())
+                .setIcon(perm.getIcon())
+                .setPath(perm.getPath())
+                .setSort(perm.getSort())
+                .setRemark(perm.getRemark());
         return vo;
     }
 
@@ -97,7 +100,8 @@ public class AuthAssembler {
             return Collections.emptyList();
         }
         Map<Long, AuthMenuVo> menuMap = menus.stream()
-                .sorted(Comparator.comparing(AuthPermEntity::getCode))
+                .sorted(Comparator.comparing(AuthPermEntity::getSort, Comparator.nullsLast(Integer::compareTo))
+                        .thenComparing(AuthPermEntity::getId))
                 .collect(Collectors.toMap(AuthPermEntity::getId, e -> toAuthMenuVo(e, checkedIds), (a, b) -> a, LinkedHashMap::new));
         List<AuthMenuVo> roots = new ArrayList<>();
         for (AuthMenuVo menu : menuMap.values()) {
@@ -112,14 +116,17 @@ public class AuthAssembler {
     }
 
     private AuthMenuVo toAuthMenuVo(AuthPermEntity menu, Set<Long> checkedIds) {
-        AuthMenuVo vo = new AuthMenuVo();
-        vo.setId(menu.getId());
-        vo.setParentId(menu.getParentId());
-        vo.setCode(menu.getCode());
-        vo.setName(menu.getName());
-        vo.setRemark(menu.getRemark());
-        vo.setChecked(BooleanUtils.toInteger(checkedIds.contains(menu.getId())));
-        vo.setChildren(new ArrayList<>());
+        AuthMenuVo vo = new AuthMenuVo()
+                .setId(menu.getId())
+                .setParentId(menu.getParentId())
+                .setCode(menu.getCode())
+                .setName(menu.getName())
+                .setIcon(menu.getIcon())
+                .setPath(menu.getPath())
+                .setSort(menu.getSort())
+                .setRemark(menu.getRemark())
+                .setChecked(BooleanUtils.toInteger(checkedIds.contains(menu.getId())))
+                .setChildren(new ArrayList<>());
         return vo;
     }
 }
