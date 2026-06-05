@@ -1,4 +1,4 @@
-CREATE TABLE `auth_user`
+CREATE TABLE IF NOT EXISTS `auth_user`
 (
     `id`            bigint            NOT NULL COMMENT '用户ID',
     `nickname`      varchar(50)       NOT NULL COMMENT '用户昵称',
@@ -12,7 +12,7 @@ CREATE TABLE `auth_user`
     UNIQUE KEY `uk_account` (`account`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT ='用户信息表';
 
-CREATE TABLE `auth_user_token`
+CREATE TABLE IF NOT EXISTS `auth_user_token`
 (
     `id`          bigint      NOT NULL COMMENT '逻辑主键',
     `user_id`     bigint      NOT NULL COMMENT '用户ID',
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `auth_role` (
   `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_role_code` (`code`)
+    UNIQUE KEY `uk_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='角色表';
 
 CREATE TABLE IF NOT EXISTS `auth_perm` (

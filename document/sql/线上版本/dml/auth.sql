@@ -1,7 +1,7 @@
 insert into `auth_user` (`id`, `nickname`, `avatar`, `account`, `password`) values (1, 'admin', 'https://ielts-dev.oss-cn-hangzhou.aliyuncs.com/image/b5c033f289cb48799185339148fd5361.jpeg', 'admin', '$2a$10$g2zXjMERqberEn9nG98RKO/mlXTtMPiMGwmJxGwu2EDoqszGK2EGq');
 
 -- 超级管理员角色
-insert into `auth_role` (`id`, `code`, `name`, `remark`) values (1, 'super_admin', '超级管理员', '拥有全部权限');
+insert into `auth_role` (`id`, `name`, `remark`) values (1, '超级管理员', '拥有全部权限');
 
 -- 权限管理菜单
 insert into `auth_perm` (`id`, `parent_id`, `code`, `name`, `type`, `icon`, `path`, `sort`, `remark`) values
