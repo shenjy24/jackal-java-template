@@ -1,95 +1,141 @@
 # java-template
 
-Spring Boot 3 后端服务，默认端口 **8080**。
+Java 21 + Spring Boot 3 后端模板项目，默认本地端口 **8080**。
+
+项目内置用户、权限、统一响应、异常处理、MyBatis Plus、日志配置、Docker 构建和部署参考文档，适合作为后台服务的基础工程。
+
+## 技术栈
+
+| 类型 | 说明 |
+|------|------|
+| JDK | Java 21 |
+| Web 框架 | Spring Boot 3 |
+| 构建工具 | Maven |
+| 持久层 | MyBatis Plus |
+| 数据库 | MySQL |
+| 容器化 | Docker、Docker Compose |
 
 ## 环境
 
-| Profile | 用途 | 数据库 | 端口   |
+| Profile | 用途 | 数据库 | 端口 |
 |---------|------|--------|------|
 | `local` | 本地开发 | `template` | 8080 |
-| `dev`   | 测试环境 | `template_dev` | 8080 |
-| `prod`  | 生产环境 | `template_prod` | 8080 |
+| `dev` | 测试环境 | `template_dev` | 8080 |
+| `prod` | 生产环境 | `template_prod` | 8080 |
 
-配置文件：`src/main/resources/application.yml`（公共）+ `application-{profile}.yml`（环境差异）。
+配置文件：
 
-**上线前必改**：数据库连接、阿里云 OSS 密钥（`aliyun.*`）。
+```text
+src/main/resources/application.yml
+src/main/resources/application-local.yml
+src/main/resources/application-dev.yml
+src/main/resources/application-prod.yml
+```
+
+上线前请检查并替换生产环境中的数据库连接、OSS 密钥等敏感配置。
+
+## 项目结构
+
+```text
+.
+├── src/
+│   ├── main/
+│   │   ├── java/com/tech/
+│   │   │   ├── common/          # 通用注解、常量、枚举等
+│   │   │   ├── component/       # 组件封装，如 OSS、缓存等
+│   │   │   ├── config/          # Spring、MyBatis、响应、拦截器等配置
+│   │   │   ├── controller/      # HTTP 接口入口，区分 admin 和 web
+│   │   │   ├── repository/      # DAO、Entity、Mapper、BO/QO/VO
+│   │   │   ├── service/         # 业务逻辑层
+│   │   │   └── util/            # 工具类
+│   │   └── resources/
+│   │       ├── mapper/          # MyBatis XML
+│   │       ├── application*.yml # 环境配置
+│   │       └── logback-spring.xml
+│   └── test/                    # 测试代码目录
+├── document/
+│   ├── deploy/                  # 部署脚本、部署方案和中间件配置
+│   └── sql/线上版本/             # 初始化 SQL
+├── Dockerfile
+├── docker-compose.yml
+├── pom.xml
+└── readme.md
+```
+
+## 分层说明
+
+| 目录 | 职责 |
+|------|------|
+| `controller/admin` | 后台管理接口 |
+| `controller/web` | Web 端接口 |
+| `service` | 业务逻辑、查询、命令和装配逻辑 |
+| `repository/dao` | 数据访问封装 |
+| `repository/entity` | 数据库实体 |
+| `repository/mapper` | MyBatis Mapper 接口 |
+| `repository/model/qo` | Controller 入参对象 |
+| `repository/model/bo` | 业务过程对象 |
+| `repository/model/vo` | 接口响应视图对象 |
+| `config/response` | 统一响应包装 |
+| `common` | 通用常量、枚举、注解 |
+
+## 本地开发
+
+启动本地环境：
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+编译检查：
+
+```bash
+mvn -q -DskipTests compile
+```
+
+本地调试前请先确认：
+
+- MySQL 已创建对应数据库。
+- `application-local.yml` 中数据库连接可用。
+- 如接口依赖 OSS、缓存等外部服务，需要补齐本地可用配置。
+
+## 数据库脚本
+
+初始化 SQL 位于：
+
+```text
+document/sql/线上版本/
+├── ddl/    # 表结构
+└── dml/    # 初始化数据
+```
 
 ## 部署
 
-### 生产发布
+部署流程、服务器准备、Docker、MySQL、Nginx、联网部署和回滚说明统一维护在：
 
-```bash
-# 一键部署（拉代码 → 构建镜像 → 启动）
-bash document/deploy/start-prod.sh prod
+```text
+document/deploy/
 ```
 
-脚本逻辑：拉取 `main` 分支 → 按参数导出环境变量 → `docker compose -f docker-compose.yml up -d --build`
+部署方案入口：
 
-### 手动部署
-
-```bash
-# 构建镜像
-docker build -t jackal-java-template-app-server:prod .
-
-# 启动（dev / prod 二选一）
-bash document/deploy/start-prod.sh dev
-bash document/deploy/start-prod.sh prod
+```text
+document/deploy/部署方案/
+├── 内网部署/
+└── 联网部署/
 ```
 
-| 环境 | 容器名 | 镜像 | 宿主机端口 |
-|------|--------|------|-----------|
-| prod | `jackal-java-template-app-server-prod` | `jackal-java-template-app-server:prod` | 18080 |
-| dev  | `jackal-java-template-app-server-dev`  | `jackal-java-template-app-server:dev`  | 28080 |
+联网部署可参考：
 
-容器限制：内存上限 1G，日志轮转 20MB × 5 份。
-
-### 日志挂载
-
-dev/prod 挂载宿主机目录到容器 `/app/logs`，可通过 `APP_LOG_DIR` 覆盖：
-
-```
-/home/jia/workspace/java-template/logs → /app/logs
+```text
+document/deploy/部署方案/联网部署/联网部署文档.md
 ```
 
-## 数据库
+## 常用文档
 
-初始化脚本：`document/sql/线上版本/`
-
-- `user.sql` — 用户相关表
-- `auth.sql` — 权限相关表
-
-## 日志
-
-| 类型 | 路径 | 保留 |
-|------|------|------|
-| 应用日志 | `logs/app/{日期}/app_log-*.log` | 30 天，单文件 100MB，总量 3GB |
-| 错误日志 | `logs/error/{日期}/error_log-*.log` | 90 天，总量 5GB |
-
-查看容器日志：
-
-```bash
-docker logs -f jackal-java-template-app-server-prod
-```
-
-## Nginx
-
-生产配置参考：`document/deploy/nginx/nginx-prod.conf`
-
-- `/api/` → 后端 `127.0.0.1:8000`
-- `/` → 前端 `127.0.0.1:30000`
-
-## 常用命令
-
-```bash
-# 重启
-docker compose -f docker-compose.yml restart app-server
-
-# 停止
-docker compose -f docker-compose.yml down
-
-# 清理 Docker 构建缓存
-bash document/deploy/docker-cleanup.sh
-
-# 本地运行（开发调试）
-mvn spring-boot:run -Dspring-boot.run.profiles=local
-```
+| 文档 | 说明 |
+|------|------|
+| `document/deploy/software/软件安装.md` | 基础软件安装 |
+| `document/deploy/mysql/MySQL部署文档.md` | MySQL Docker 部署和备份 |
+| `document/deploy/nginx/` | Nginx 配置参考 |
+| `document/deploy/docker/docker-cleanup.sh` | Docker 清理脚本 |
+| `document/deploy/部署方案/联网部署/联网部署文档.md` | 联网部署和回滚 |
