@@ -1,8 +1,13 @@
 services:
-  java-template:
+  app-server:
+    image: ${APP_IMAGE:-java-template:dev}
+    container_name: ${APP_CONTAINER_NAME:-java-template-dev}
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
     pull_policy: never
     restart: unless-stopped
     logging:
@@ -12,10 +17,12 @@ services:
         max-file: "5"
     environment:
       - TZ=Asia/Shanghai
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ${APP_LOG_DIR:-./logs}:/app/logs
     ports:
-      - "8080:8080"
+      - "${APP_PORT:-8080}:8080"
     deploy:
       resources:
         limits:

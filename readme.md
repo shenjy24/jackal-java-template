@@ -20,32 +20,32 @@ Spring Boot 3 后端服务，默认端口 **8080**。
 
 ```bash
 # 一键部署（拉代码 → 构建镜像 → 启动）
-bash document/deploy/server-prod.sh
+bash document/deploy/start-prod.sh prod
 ```
 
-脚本逻辑：拉取 `main` 分支 → `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build`
+脚本逻辑：拉取 `main` 分支 → 按参数导出环境变量 → `docker compose -f docker-compose.yml up -d --build`
 
 ### 手动部署
 
 ```bash
 # 构建镜像
-docker build -t java-template:prod .
+docker build -t jackal-java-template-app-server:prod .
 
 # 启动（dev / prod 二选一）
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+bash document/deploy/start-prod.sh dev
+bash document/deploy/start-prod.sh prod
 ```
 
 | 环境 | 容器名 | 镜像 | 宿主机端口 |
 |------|--------|------|-----------|
-| prod | `java-template-prod` | `java-template:prod` | 18881 |
-| dev  | `java-template-dev`  | `java-template:dev`  | 18881 |
+| prod | `jackal-java-template-app-server-prod` | `jackal-java-template-app-server:prod` | 18080 |
+| dev  | `jackal-java-template-app-server-dev`  | `jackal-java-template-app-server:dev`  | 28080 |
 
 容器限制：内存上限 1G，日志轮转 20MB × 5 份。
 
 ### 日志挂载
 
-dev/prod 挂载宿主机目录到容器 `/app/logs`：
+dev/prod 挂载宿主机目录到容器 `/app/logs`，可通过 `APP_LOG_DIR` 覆盖：
 
 ```
 /home/jia/workspace/java-template/logs → /app/logs
@@ -68,7 +68,7 @@ dev/prod 挂载宿主机目录到容器 `/app/logs`：
 查看容器日志：
 
 ```bash
-docker logs -f java-template-prod
+docker logs -f jackal-java-template-app-server-prod
 ```
 
 ## Nginx
@@ -82,10 +82,10 @@ docker logs -f java-template-prod
 
 ```bash
 # 重启
-docker compose -f docker-compose.yml -f docker-compose.prod.yml restart java-template
+docker compose -f docker-compose.yml restart app-server
 
 # 停止
-docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+docker compose -f docker-compose.yml down
 
 # 清理 Docker 构建缓存
 bash document/deploy/docker-cleanup.sh
