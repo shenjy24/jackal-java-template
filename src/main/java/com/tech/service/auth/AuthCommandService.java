@@ -36,7 +36,7 @@ public class AuthCommandService {
     public AuthUserEntity loginByAccount(String account, String password) {
         AuthUserEntity adminUser = authUserDao.getByAccount(account);
         if (adminUser == null || CryptoUtil.notMatches(password, adminUser.getPassword())) {
-            throw new BizException(ErrorCode.USER_ERROR4);
+            throw new BizException(ErrorCode.AUTH_ERROR4);
         }
         AuthUserTokenEntity token = saveOrUpdateToken(adminUser.getId());
         CookieUtil.setCookie(token.getToken());
@@ -90,7 +90,7 @@ public class AuthCommandService {
         }
         AuthUserEntity existUser = authUserDao.getByAccount(account);
         if (existUser != null) {
-            throw new BizException(ErrorCode.USER_ERROR5);
+            throw new BizException(ErrorCode.AUTH_ERROR5);
         }
         AuthUserEntity user = new AuthUserEntity()
                 .setNickname(nickname)
@@ -104,12 +104,12 @@ public class AuthCommandService {
     public AuthUserEntity updateAuthUser(Long id, String nickname, String avatar, String account) {
         AuthUserEntity user = authUserDao.getById(id);
         if (user == null) {
-            throw new BizException(ErrorCode.USER_ERROR3);
+            throw new BizException(ErrorCode.AUTH_ERROR3);
         }
         if (StringUtils.isNotBlank(account) && !account.equals(user.getAccount())) {
             AuthUserEntity existUser = authUserDao.getByAccount(account);
             if (existUser != null) {
-                throw new BizException(ErrorCode.USER_ERROR5);
+                throw new BizException(ErrorCode.AUTH_ERROR5);
             }
             user.setAccount(account);
         }
@@ -119,7 +119,7 @@ public class AuthCommandService {
         return user;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void deleteAuthUser(Long userId) {
         authUserDao.removeById(userId);
         authUserRoleDao.removeByUserId(userId);
@@ -128,7 +128,7 @@ public class AuthCommandService {
     public void updateAuthUserPassword(Long userId, String oldPassword, String newPassword) {
         AuthUserEntity user = authUserDao.getById(userId);
         if (user == null || CryptoUtil.notMatches(oldPassword, user.getPassword())) {
-            throw new BizException(ErrorCode.USER_ERROR4);
+            throw new BizException(ErrorCode.AUTH_ERROR4);
         }
         user.setPassword(CryptoUtil.encode(newPassword));
         authUserDao.updateById(user);
@@ -140,7 +140,7 @@ public class AuthCommandService {
         }
         AuthUserEntity user = authUserDao.getById(userId);
         if (user == null) {
-            throw new BizException(ErrorCode.USER_ERROR3);
+            throw new BizException(ErrorCode.AUTH_ERROR3);
         }
         user.setPassword(CryptoUtil.encode(Constants.DEFAULT_PASSWORD));
         authUserDao.updateById(user);
@@ -164,11 +164,12 @@ public class AuthCommandService {
         return role;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void deleteAuthRole(Long roleId) {
+        if (authUserRoleDao.existsByRoleId(roleId)) {
+            throw new BizException(ErrorCode.AUTH_ERROR1);
+        }
         authRoleDao.removeById(roleId);
-        authUserRoleDao.removeByRoleId(roleId);
-        authRolePermDao.removeByRoleId(roleId);
     }
 
     public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String icon, String path, Integer sort, String remark) {
@@ -191,32 +192,34 @@ public class AuthCommandService {
             throw new BizException(ErrorCode.PARAM_ERROR);
         }
         perm.setParentId(parentId)
-            .setCode(code)
-            .setName(name)
-            .setType(type)
-            .setIcon(icon)
-            .setPath(path)
-            .setSort(sort)
-            .setRemark(remark);
+                .setCode(code)
+                .setName(name)
+                .setType(type)
+                .setIcon(icon)
+                .setPath(path)
+                .setSort(sort)
+                .setRemark(remark);
         authPermDao.updateById(perm);
         return perm;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void deleteAuthPerm(Long permId) {
+        if (authRolePermDao.existsByPermId(permId)) {
+            throw new BizException(ErrorCode.AUTH_ERROR2);
+        }
         authPermDao.removeById(permId);
-        authRolePermDao.removeByPermId(permId);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void bindUserRole(Long userId, List<Long> roleIds) {
         if (authUserDao.getById(userId) == null) {
-            throw new BizException(ErrorCode.USER_ERROR3);
+            throw new BizException(ErrorCode.AUTH_ERROR3);
         }
         authUserRoleDao.bindUserRole(userId, roleIds);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void bindRolePerm(Long roleId, List<Long> permIds) {
         if (authRoleDao.getById(roleId) == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);

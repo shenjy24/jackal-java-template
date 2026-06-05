@@ -21,6 +21,15 @@ public class AuthUserRoleDao extends ServiceImpl<AuthUserRoleMapper, AuthUserRol
         return baseMapper.selectList(new LambdaQueryWrapper<AuthUserRoleEntity>().eq(AuthUserRoleEntity::getUserId, userId));
     }
 
+    public boolean existsByRoleId(Long roleId) {
+        if (roleId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<AuthUserRoleEntity> wrapper = new LambdaQueryWrapper<AuthUserRoleEntity>()
+                .eq(AuthUserRoleEntity::getRoleId, roleId);
+        return this.exists(wrapper);
+    }
+
     public void bindUserRole(Long userId, List<Long> roleIds) {
         remove(new LambdaUpdateWrapper<AuthUserRoleEntity>().eq(AuthUserRoleEntity::getUserId, userId));
         if (CollectionUtils.isEmpty(roleIds)) {

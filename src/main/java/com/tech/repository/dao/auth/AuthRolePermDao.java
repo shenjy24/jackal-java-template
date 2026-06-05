@@ -30,6 +30,14 @@ public class AuthRolePermDao extends ServiceImpl<AuthRolePermMapper, AuthRolePer
         return baseMapper.selectList(new LambdaQueryWrapper<AuthRolePermEntity>().eq(AuthRolePermEntity::getRoleId, roleId));
     }
 
+    public boolean existsByPermId(Long permId) {
+        if (permId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<AuthRolePermEntity> wrapper = new LambdaQueryWrapper<AuthRolePermEntity>().eq(AuthRolePermEntity::getPermId, permId);
+        return this.exists(wrapper);
+    }
+
     public void bindRolePerm(Long roleId, List<Long> permIds) {
         LambdaQueryWrapper<AuthRolePermEntity> wrapper = new LambdaQueryWrapper<AuthRolePermEntity>().eq(AuthRolePermEntity::getRoleId, roleId);
         this.remove(wrapper);
