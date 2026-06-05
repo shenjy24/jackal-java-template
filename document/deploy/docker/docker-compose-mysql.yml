@@ -1,5 +1,5 @@
 services:
-  mysql:
+  mysql-service:
     image: mysql:8.4
     container_name: mysql8
     restart: unless-stopped
