@@ -11,8 +11,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,7 +59,7 @@ public class AuthQueryService {
             return Collections.emptyList();
         }
         Set<Long> roleIds = userRoles.stream().map(AuthUserRoleEntity::getRoleId).collect(Collectors.toSet());
-        List<AuthRoleEntity> roles = authRoleDao.listAuthRole(roleIds);
+        List<AuthRoleEntity> roles = authRoleDao.listByIds(roleIds);
         if (CollectionUtils.isEmpty(roles)) {
             return Collections.emptyList();
         }
@@ -103,6 +105,35 @@ public class AuthQueryService {
         return authRolePermDao.listAuthRolePerm(roleId).stream()
                 .map(AuthRolePermEntity::getPermId)
                 .collect(Collectors.toSet());
+    }
+
+    public List<AuthRoleEntity> listUserRole(Long userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        Set<Long> roleIds = authUserRoleDao.listAuthUserRole(userId).stream()
+                .map(AuthUserRoleEntity::getRoleId)
+                .collect(Collectors.toSet());
+        return authRoleDao.listByIds(roleIds);
+    }
+
+    public Map<Long, List<AuthRoleEntity>> listUserRoleMap(Collection<Long> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptyMap();
+        }
+        List<AuthUserRoleEntity> userRoles = authUserRoleDao.listAuthUserRole(userIds);
+        if (CollectionUtils.isEmpty(userRoles)) {
+            return Collections.emptyMap();
+        }
+        Set<Long> roleIds = userRoles.stream()
+                .map(AuthUserRoleEntity::getRoleId)
+                .collect(Collectors.toSet());
+        Map<Long, AuthRoleEntity> roleMap = authRoleDao.listByIds(roleIds).stream()
+                .collect(Collectors.toMap(AuthRoleEntity::getId, e -> e));
+        return userRoles.stream()
+                .filter(e -> roleMap.containsKey(e.getRoleId()))
+                .collect(Collectors.groupingBy(AuthUserRoleEntity::getUserId,
+                        Collectors.mapping(e -> roleMap.get(e.getRoleId()), Collectors.toList())));
     }
 
     public AuthUserEntity getAuthUser(Long userId) {

@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 管理后台用户控制器
@@ -57,7 +59,7 @@ public class AdminAuthController {
     @PostMapping("/loginByAccount")
     public AuthUserVo loginByAccount(@Valid @RequestBody LoginAccountQo qo) {
         AuthUserEntity user = authCommandService.loginByAccount(qo.getAccount(), qo.getPassword());
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(user.getId()));
     }
 
     /**
@@ -79,7 +81,7 @@ public class AdminAuthController {
     @PostMapping("/getUser")
     public AuthUserVo getUser(@UserId Long userId) {
         AuthUserEntity user = authQueryService.getAuthUser(userId);
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(userId));
     }
 
     /**
@@ -103,7 +105,7 @@ public class AdminAuthController {
     @PostMapping("/updateUser")
     public AuthUserVo updateUser(@UserId Long userId, @Valid @RequestBody AuthUserUpdateQo qo) {
         AuthUserEntity user = authCommandService.updateAuthUser(userId, qo.getNickname(), qo.getAvatar(), qo.getAccount());
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(userId));
     }
 
     /**
@@ -140,7 +142,7 @@ public class AdminAuthController {
     @PostMapping("/getAuthUser")
     public AuthUserVo getAuthUser(@Valid @RequestBody IdQo qo) {
         AuthUserEntity user = authQueryService.getAuthUser(qo.getId());
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(qo.getId()));
     }
 
     /**
@@ -153,7 +155,10 @@ public class AdminAuthController {
     @PostMapping("/queryAuthUser")
     public JsonPage<AuthUserVo> queryAuthUser(@RequestBody AuthUserQueryQo qo) {
         IPage<AuthUserEntity> page = authQueryService.queryAuthUser(qo.getNickname(), qo.getPageNum(), qo.getPageSize());
-        return new JsonPage<>(page.getTotal(), authAssembler.toAuthUserVo(page.getRecords()));
+        List<AuthUserEntity> users = page.getRecords();
+        Set<Long> userIds = users.stream().map(AuthUserEntity::getId).collect(Collectors.toSet());
+        Map<Long, List<AuthRoleEntity>> roleMap = authQueryService.listUserRoleMap(userIds);
+        return new JsonPage<>(page.getTotal(), authAssembler.toAuthUserVo(users, roleMap));
     }
 
     /**
@@ -168,7 +173,7 @@ public class AdminAuthController {
     public AuthUserVo saveAuthUser(@Valid @RequestBody AuthUserQo qo) {
         AuthUserEntity user = authCommandService.saveAuthUser(qo.getNickname(), qo.getAvatar(), qo.getAccount());
         authCommandService.bindUserRole(user.getId(), qo.getRoleIds());
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(user.getId()));
     }
 
     /**
@@ -183,7 +188,7 @@ public class AdminAuthController {
     public AuthUserVo updateAuthUser(@Valid @RequestBody AuthUserQo qo) {
         AuthUserEntity user = authCommandService.updateAuthUser(qo.getId(), qo.getNickname(), qo.getAvatar(), qo.getAccount());
         authCommandService.bindUserRole(user.getId(), qo.getRoleIds());
-        return authAssembler.toAuthUserVo(user);
+        return authAssembler.toAuthUserVo(user, authQueryService.listUserRole(user.getId()));
     }
 
     /**

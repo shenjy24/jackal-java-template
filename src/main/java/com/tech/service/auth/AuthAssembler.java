@@ -7,6 +7,7 @@ import com.tech.repository.model.vo.auth.AuthMenuVo;
 import com.tech.repository.model.vo.auth.AuthPermVo;
 import com.tech.repository.model.vo.auth.AuthRoleVo;
 import com.tech.repository.model.vo.auth.AuthUserVo;
+import com.tech.repository.model.vo.auth.AuthUserRoleVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -22,6 +23,10 @@ import java.util.stream.Collectors;
 public class AuthAssembler {
 
     public AuthUserVo toAuthUserVo(AuthUserEntity user) {
+        return toAuthUserVo(user, Collections.emptyList());
+    }
+
+    public AuthUserVo toAuthUserVo(AuthUserEntity user, List<AuthRoleEntity> roles) {
         if (user == null) {
             return null;
         }
@@ -29,15 +34,40 @@ public class AuthAssembler {
                 .setId(user.getId())
                 .setNickname(user.getNickname())
                 .setAvatar(user.getAvatar())
-                .setAccount(user.getAccount());
+                .setAccount(user.getAccount())
+                .setRoles(toAuthUserRoleVo(roles));
         return vo;
     }
 
     public List<AuthUserVo> toAuthUserVo(List<AuthUserEntity> users) {
+        return toAuthUserVo(users, Collections.emptyMap());
+    }
+
+    public List<AuthUserVo> toAuthUserVo(List<AuthUserEntity> users, Map<Long, List<AuthRoleEntity>> roleMap) {
         if (CollectionUtils.isEmpty(users)) {
             return Collections.emptyList();
         }
-        return users.stream().map(this::toAuthUserVo).collect(Collectors.toList());
+        Map<Long, List<AuthRoleEntity>> userRoleMap = roleMap == null ? Collections.emptyMap() : roleMap;
+        return users.stream()
+                .map(e -> toAuthUserVo(e, userRoleMap.get(e.getId())))
+                .collect(Collectors.toList());
+    }
+
+    public AuthUserRoleVo toAuthUserRoleVo(AuthRoleEntity role) {
+        if (role == null) {
+            return null;
+        }
+        AuthUserRoleVo vo = new AuthUserRoleVo()
+                .setId(role.getId())
+                .setName(role.getName());
+        return vo;
+    }
+
+    public List<AuthUserRoleVo> toAuthUserRoleVo(List<AuthRoleEntity> roles) {
+        if (CollectionUtils.isEmpty(roles)) {
+            return Collections.emptyList();
+        }
+        return roles.stream().map(this::toAuthUserRoleVo).collect(Collectors.toList());
     }
 
     public AuthRoleVo toAuthRoleVo(AuthRoleEntity role) {

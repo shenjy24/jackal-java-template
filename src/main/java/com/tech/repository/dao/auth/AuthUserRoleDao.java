@@ -8,6 +8,7 @@ import com.tech.repository.mapper.auth.AuthUserRoleMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,13 @@ public class AuthUserRoleDao extends ServiceImpl<AuthUserRoleMapper, AuthUserRol
             return Collections.emptyList();
         }
         return baseMapper.selectList(new LambdaQueryWrapper<AuthUserRoleEntity>().eq(AuthUserRoleEntity::getUserId, userId));
+    }
+
+    public List<AuthUserRoleEntity> listAuthUserRole(Collection<Long> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptyList();
+        }
+        return baseMapper.selectList(new LambdaQueryWrapper<AuthUserRoleEntity>().in(AuthUserRoleEntity::getUserId, userIds));
     }
 
     public boolean existsByRoleId(Long roleId) {
