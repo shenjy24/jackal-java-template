@@ -5,6 +5,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
-      - /home/jia/workspace/java-template/logs:/app/logs
+      - ../logs:/app/logs
     ports:
       - "28080:8080"
