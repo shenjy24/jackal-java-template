@@ -13,7 +13,6 @@ DOCKER_COMPOSE_BINARY="${DOCKER_COMPOSE_BINARY:-docker-compose-linux-x86_64}"
 
 INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
 OPT_DIR="${OPT_DIR:-/opt}"
-GIT_INSTALL_DIR="${GIT_INSTALL_DIR:-$OPT_DIR/git-binaries}"
 DOCKER_BIN_DIR="${DOCKER_BIN_DIR:-$INSTALL_PREFIX/bin}"
 DOCKER_COMPOSE_PLUGIN_DIR="${DOCKER_COMPOSE_PLUGIN_DIR:-$INSTALL_PREFIX/lib/docker/cli-plugins}"
 
@@ -86,12 +85,6 @@ create_tech_user() {
   fi
 }
 
-find_executable() {
-  local root_dir="$1"
-  local name="$2"
-  find "$root_dir" -type f -name "$name" -perm /111 | head -n 1
-}
-
 install_git() {
   local archive_path="$1"
   log "安装 Git: $archive_path"
@@ -104,40 +97,14 @@ install_git() {
 
   tar -xzf "$archive_path" -C "$tmp_dir"
 
-  local git_bin
-  git_bin="$(find_executable "$tmp_dir" git)"
-  if [ -z "$git_bin" ]; then
-    echo "Git 离线包中未找到可执行文件 git: $archive_path" >&2
+  if [ ! -f "$tmp_dir/git" ]; then
+    echo "Git 离线包结构不符合预期，未找到顶层 git 文件: $archive_path" >&2
     exit 1
   fi
 
-  $SUDO rm -rf "$GIT_INSTALL_DIR"
-  $SUDO mkdir -p "$GIT_INSTALL_DIR"
-  $SUDO cp -a "$tmp_dir"/. "$GIT_INSTALL_DIR"/
-
-  git_bin="${git_bin#$tmp_dir/}"
-  git_bin="$GIT_INSTALL_DIR/$git_bin"
-
-  local git_exec_path
-  git_exec_path="$(find "$GIT_INSTALL_DIR" -type d -path "*/libexec/git-core" | head -n 1 || true)"
-  if [ -z "$git_exec_path" ]; then
-    git_exec_path="$(find "$GIT_INSTALL_DIR" -type d -path "*/git-core" | head -n 1 || true)"
-  fi
-
   $SUDO mkdir -p "$INSTALL_PREFIX/bin"
-  if [ -n "$git_exec_path" ]; then
-    $SUDO sh -c "cat > '$INSTALL_PREFIX/bin/git'" <<EOF
-#!/bin/sh
-export GIT_EXEC_PATH='$git_exec_path'
-exec '$git_bin' "\$@"
-EOF
-  else
-    $SUDO sh -c "cat > '$INSTALL_PREFIX/bin/git'" <<EOF
-#!/bin/sh
-exec '$git_bin' "\$@"
-EOF
-  fi
-  $SUDO chmod 0755 "$INSTALL_PREFIX/bin/git"
+  $SUDO cp "$tmp_dir"/git* "$INSTALL_PREFIX/bin"/
+  $SUDO chmod 0755 "$INSTALL_PREFIX/bin"/git*
 
   "$INSTALL_PREFIX/bin/git" --version
   rm -rf "$tmp_dir"
