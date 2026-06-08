@@ -3,29 +3,39 @@
 # 开启严格模式：遇到错误、未定义变量或管道错误立即退出
 set -Eeuo pipefail
 
+# ================= 路径定位 =================
+# 脚本放在部署目录下，目标仓库目录与脚本目录同级。
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ================= 读取配置 =================
+# 如需调整配置，复制 prod.env.example 为 prod.env 后修改。
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/prod.env}"
+if [ -f "$ENV_FILE" ]; then
+    set -a
+    . "$ENV_FILE"
+    set +a
+fi
+
 # ================= 部署参数 =================
-# 生产环境固定参数；如需调整端口、仓库名或分支，只改本段即可。
-ENV="prod"
-BRANCH_NAME="main"
-REPO_NAME="java-template"
-APP_PORT="18080"
-APP_LOG_DIR="../logs"
-APP_MEMORY_LIMIT="1G"
-APP_MEMORY_RESERVATION="512M"
-IMAGE_KEEP_COUNT="3"
+# 可通过 prod.env 或执行前环境变量覆盖。
+ENV="${ENV:-prod}"
+BRANCH_NAME="${BRANCH_NAME:-main}"
+REPO_NAME="${REPO_NAME:-java-template}"
+APP_PORT="${APP_PORT:-18080}"
+APP_LOG_DIR="${APP_LOG_DIR:-../logs}"
+APP_MEMORY_LIMIT="${APP_MEMORY_LIMIT:-1G}"
+APP_MEMORY_RESERVATION="${APP_MEMORY_RESERVATION:-512M}"
+IMAGE_KEEP_COUNT="${IMAGE_KEEP_COUNT:-3}"
 
 # ================= Compose 环境变量 =================
 # docker-compose.yml 通过这些变量生成容器名、项目名和 Spring Profile。
 # APP_IMAGE 会在代码同步完成后，结合当前提交号生成。
-APP_CONTAINER_NAME="${REPO_NAME}-${ENV}"
-COMPOSE_PROJECT_NAME="${REPO_NAME}-${ENV}"
-SPRING_PROFILES_ACTIVE="$ENV"
+APP_CONTAINER_NAME="${APP_CONTAINER_NAME:-${REPO_NAME}-${ENV}}"
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${REPO_NAME}-${ENV}}"
+SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-$ENV}"
 
 export APP_CONTAINER_NAME COMPOSE_PROJECT_NAME SPRING_PROFILES_ACTIVE APP_PORT APP_LOG_DIR APP_MEMORY_LIMIT APP_MEMORY_RESERVATION
 
-# ================= 路径定位 =================
-# 脚本放在部署目录下，目标仓库目录与脚本目录同级。
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_PATH="$SCRIPT_DIR/$REPO_NAME"
 
 # ================= 执行 =================

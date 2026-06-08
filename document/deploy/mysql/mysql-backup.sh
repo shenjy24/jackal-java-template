@@ -2,12 +2,12 @@
 set -eo pipefail
 
 # ------------------- 配置区域 -------------------
-CONTAINER_NAME="mysql"
-DB_USER="root"
-DB_PASS="123456"
-DB_TARGET="--databases template"   # 明确指定业务库，避免备份系统库
-BACKUP_DIR="./backup"              # 备份目录
-RETENTION_DAYS=7                   # 保留天数
+CONTAINER_NAME="${CONTAINER_NAME:-mysql}"
+DB_USER="${DB_USER:-root}"
+DB_PASS="${DB_PASS:-123456}"
+DB_TARGET="${DB_TARGET:---databases template}"   # 明确指定业务库，避免备份系统库
+BACKUP_DIR="${BACKUP_DIR:-./backup}"             # 备份目录
+RETENTION_DAYS="${RETENTION_DAYS:-7}"            # 保留天数
 
 # ------------------- 运行变量 -------------------
 DATE_SUFFIX=$(date +"%Y%m%d_%H%M%S")
