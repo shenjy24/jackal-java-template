@@ -137,5 +137,5 @@ document/deploy/部署方案/联网部署/联网部署文档.md
 | `document/deploy/software/软件安装.md` | 基础软件安装 |
 | `document/deploy/mysql/MySQL部署文档.md` | MySQL Docker 部署和备份 |
 | `document/deploy/nginx/` | Nginx 配置参考 |
-| `document/deploy/docker/docker-cleanup.sh` | Docker 清理脚本 |
+| `document/deploy/docker/Docker清理文档.md` | Docker 构建缓存清理 |
 | `document/deploy/部署方案/联网部署/联网部署文档.md` | 联网部署和回滚 |
