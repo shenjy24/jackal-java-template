@@ -4,7 +4,7 @@
 set -Eeuo pipefail
 
 # ================= 路径定位 =================
-# 脚本放在部署目录下，目标仓库目录与脚本目录同级。
+# 脚本、Dockerfile 和 docker-compose.yml 放在 deploy 目录下，目标仓库目录与 deploy 目录同级。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ================= 读取配置 =================
@@ -36,7 +36,11 @@ SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-$ENV}"
 
 export APP_CONTAINER_NAME COMPOSE_PROJECT_NAME SPRING_PROFILES_ACTIVE APP_PORT APP_LOG_DIR APP_MEMORY_LIMIT APP_MEMORY_RESERVATION
 
-REPO_PATH="$SCRIPT_DIR/$REPO_NAME"
+REPO_PATH="$(cd "$SCRIPT_DIR/.." && pwd)/$REPO_NAME"
+COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+APP_BUILD_CONTEXT="$REPO_PATH"
+APP_DOCKERFILE="$SCRIPT_DIR/Dockerfile"
+export APP_BUILD_CONTEXT APP_DOCKERFILE
 
 # ================= 执行 =================
 echo "进入仓库目录: $REPO_PATH"
@@ -79,7 +83,7 @@ fi
 
 # ================= 构建与启动 =================
 echo "构建并启动服务..."
-docker compose -f docker-compose.yml up -d --build || { echo "Docker Compose 启动失败"; exit 1; }
+docker compose -f "$COMPOSE_FILE" up -d --build || { echo "Docker Compose 启动失败"; exit 1; }
 
 # 只保留当前环境最新的几个版本镜像；删除失败时提示但不中断部署。
 echo "保留最新 $IMAGE_KEEP_COUNT 个 ${REPO_NAME}:${ENV}-* 镜像版本..."

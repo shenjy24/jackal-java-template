@@ -51,7 +51,11 @@ APP_IMAGE="$TARGET_IMAGE"
 
 export APP_CONTAINER_NAME COMPOSE_PROJECT_NAME SPRING_PROFILES_ACTIVE APP_PORT APP_LOG_DIR APP_MEMORY_LIMIT APP_MEMORY_RESERVATION APP_IMAGE
 
-REPO_PATH="$SCRIPT_DIR/$REPO_NAME"
+REPO_PATH="$(cd "$SCRIPT_DIR/.." && pwd)/$REPO_NAME"
+COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+APP_BUILD_CONTEXT="$REPO_PATH"
+APP_DOCKERFILE="$SCRIPT_DIR/Dockerfile"
+export APP_BUILD_CONTEXT APP_DOCKERFILE
 
 echo "进入仓库目录: $REPO_PATH"
 cd "$REPO_PATH" || { echo "无法进入目录: $REPO_PATH"; exit 1; }
@@ -70,7 +74,7 @@ fi
 
 # ================= 回滚启动 =================
 echo "回滚到镜像: $APP_IMAGE"
-docker compose -f docker-compose.yml up -d --no-build app-server || { echo "Docker Compose 回滚启动失败"; exit 1; }
+docker compose -f "$COMPOSE_FILE" up -d --no-build app-server || { echo "Docker Compose 回滚启动失败"; exit 1; }
 
 echo "等待容器状态..."
 sleep 5

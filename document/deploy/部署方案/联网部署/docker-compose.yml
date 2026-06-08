@@ -3,8 +3,8 @@ services:
     image: ${APP_IMAGE:-java-template:dev}
     container_name: ${APP_CONTAINER_NAME:-java-template-dev}
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ${APP_BUILD_CONTEXT:-..}
+      dockerfile: ${APP_DOCKERFILE:-Dockerfile}
       args:
         APP_UID: ${APP_UID:-1000}
         APP_GID: ${APP_GID:-1000}

@@ -21,6 +21,7 @@ APP_PORT="${APP_PORT:-18080}"
 APP_LOG_DIR="${APP_LOG_DIR:-/data/java-template/logs}"
 APP_MEMORY_LIMIT="${APP_MEMORY_LIMIT:-1G}"
 APP_MEMORY_RESERVATION="${APP_MEMORY_RESERVATION:-512M}"
+IMAGE_KEEP_COUNT="${IMAGE_KEEP_COUNT:-3}"
 APP_CONTAINER_NAME="${APP_CONTAINER_NAME:-${REPO_NAME}-${ENV}}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${REPO_NAME}-${ENV}}"
 SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-$ENV}"
@@ -113,6 +114,21 @@ if ! docker ps --filter "name=^/${APP_CONTAINER_NAME}$" --filter "status=running
     echo "  docker logs --tail=200 $APP_CONTAINER_NAME"
     exit 1
 fi
+
+# 只保留当前环境最新的几个版本镜像；删除失败时提示但不中断部署。
+echo "保留最新 $IMAGE_KEEP_COUNT 个 ${REPO_NAME}:${ENV}-* 镜像版本..."
+mapfile -t OLD_IMAGE_REFS < <(
+    docker image ls "$REPO_NAME" --format "{{.Repository}}:{{.Tag}}" \
+        | awk -v env="$ENV" -v keep="$IMAGE_KEEP_COUNT" '$1 ~ ":" env "-" { count++; if (count > keep) print $1 }'
+)
+
+for IMAGE_REF in "${OLD_IMAGE_REFS[@]}"; do
+    docker image rm "$IMAGE_REF" || echo "镜像删除失败，可能仍被容器使用: $IMAGE_REF"
+done
+
+# 清理构建后遗留的 dangling image，降低服务器磁盘压力。
+echo "清除无用的悬空镜像..."
+docker image prune -f
 
 echo "内网启动完成: $APP_CONTAINER_NAME -> $APP_IMAGE"
 echo "检查应用:"

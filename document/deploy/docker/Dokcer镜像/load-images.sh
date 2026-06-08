@@ -23,8 +23,8 @@ LOAD_RUNTIME_IMAGE="${LOAD_RUNTIME_IMAGE:-1}"
 RUNTIME_IMAGE="${RUNTIME_IMAGE:-eclipse-temurin:21-jre}"
 RUNTIME_IMAGE_TAR="${RUNTIME_IMAGE_TAR:-$IMAGE_DIR/eclipse-temurin-21-jre.tar}"
 LOAD_NGINX_IMAGE="${LOAD_NGINX_IMAGE:-0}"
-NGINX_IMAGE="${NGINX_IMAGE:-nginx:stable}"
-NGINX_IMAGE_TAR="${NGINX_IMAGE_TAR:-$IMAGE_DIR/nginx-stable.tar}"
+NGINX_IMAGE="${NGINX_IMAGE:-nginx:1.30.2}"
+NGINX_IMAGE_TAR="${NGINX_IMAGE_TAR:-$IMAGE_DIR/nginx-1.30.2.tar}"
 
 load_image() {
     local image_tar="$1"
