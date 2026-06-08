@@ -2,24 +2,16 @@
 
 set -Eeuo pipefail
 
-# Common server bootstrap script for steps 1-7 in software installation docs.
-# MySQL is intentionally excluded.
+# Common server bootstrap script for creating the deploy user and installing Git, Docker and Docker Compose.
 
 TECH_USER="${TECH_USER:-tech}"
-NGINX_USER="${NGINX_USER:-root}"
-SKIP_NODE="${SKIP_NODE:-0}"
 
 # Fixed software versions. Update these values intentionally when upgrading.
-GIT_VERSION="${GIT_VERSION:-2.43.0}"
-JDK_VERSION="${JDK_VERSION:-21.0.8}"
-MAVEN_VERSION="${MAVEN_VERSION:-3.9.11}"
-DOCKER_VERSION="${DOCKER_VERSION:-28.3.3}"
-CONTAINERD_VERSION="${CONTAINERD_VERSION:-1.7.27}"
-DOCKER_BUILDX_VERSION="${DOCKER_BUILDX_VERSION:-0.26.1}"
-DOCKER_COMPOSE_VERSION="${DOCKER_COMPOSE_VERSION:-2.39.1}"
-NODE_VERSION="${NODE_VERSION:-20.19.4}"
-PNPM_VERSION="${PNPM_VERSION:-10.15.0}"
-NGINX_VERSION="${NGINX_VERSION:-1.24.0}"
+GIT_VERSION="${GIT_VERSION:-2.54.0}"
+DOCKER_VERSION="${DOCKER_VERSION:-29.5.3}"
+CONTAINERD_VERSION="${CONTAINERD_VERSION:-2.2.4}"
+DOCKER_BUILDX_VERSION="${DOCKER_BUILDX_VERSION:-0.34.1}"
+DOCKER_COMPOSE_VERSION="${DOCKER_COMPOSE_VERSION:-5.1.4}"
 
 SUDO=""
 if [ "$(id -u)" -ne 0 ]; then
@@ -219,42 +211,6 @@ install_git() {
   git --version
 }
 
-install_jdk21() {
-  log "Installing JDK $JDK_VERSION"
-  if ensure_command_version java "$JDK_VERSION" java -version; then
-    return
-  fi
-
-  case "$PKG_MANAGER" in
-    apt)
-      install_package_version_prefix openjdk-21-jdk "$JDK_VERSION"
-      ;;
-    dnf|yum)
-      install_package_version_prefix java-21-openjdk-devel "$JDK_VERSION"
-      ;;
-  esac
-
-  java -version
-}
-
-install_maven() {
-  log "Installing Maven $MAVEN_VERSION"
-  if ensure_command_version mvn "$MAVEN_VERSION" mvn --version; then
-    return
-  fi
-
-  local archive_name="apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-  local download_url="https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/${archive_name}"
-  local install_dir="/opt/apache-maven-${MAVEN_VERSION}"
-
-  $SUDO mkdir -p /opt
-  curl -fsSL "$download_url" -o "/tmp/$archive_name"
-  $SUDO tar -xzf "/tmp/$archive_name" -C /opt
-  $SUDO ln -sfn "$install_dir" /opt/maven
-  $SUDO ln -sfn /opt/maven/bin/mvn /usr/local/bin/mvn
-  mvn --version
-}
-
 install_docker_apt() {
   local repo_os="$OS_ID"
   [ "$repo_os" != "ubuntu" ] && [ "$repo_os" != "debian" ] && repo_os="ubuntu"
@@ -299,78 +255,28 @@ install_docker_yum_or_dnf() {
 install_docker() {
   log "Installing Docker $DOCKER_VERSION"
   if ensure_command_version docker "$DOCKER_VERSION" docker --version; then
-    enable_service docker
-    return
+    echo "Docker is already installed."
+  else
+    case "$PKG_MANAGER" in
+      apt) install_docker_apt ;;
+      dnf|yum) install_docker_yum_or_dnf ;;
+    esac
   fi
-  case "$PKG_MANAGER" in
-    apt) install_docker_apt ;;
-    dnf|yum) install_docker_yum_or_dnf ;;
-  esac
 
   enable_service docker
   docker --version || $SUDO docker --version
 
+  if docker compose version 2>/dev/null | grep -q "$DOCKER_COMPOSE_VERSION"; then
+    docker compose version
+  else
+    log "Installing Docker Compose $DOCKER_COMPOSE_VERSION"
+    install_package_version_prefix docker-compose-plugin "${DOCKER_COMPOSE_VERSION}"
+    docker compose version
+  fi
+
   if command_exists usermod; then
     $SUDO usermod -aG docker "$TECH_USER" 2>/dev/null || true
   fi
-}
-
-install_node() {
-  if [ "$SKIP_NODE" = "1" ]; then
-    log "Skipping Node.js"
-    return
-  fi
-
-  log "Installing Node.js $NODE_VERSION"
-  if ensure_command_version node "v$NODE_VERSION" node -v; then
-    ensure_command_version pnpm "$PNPM_VERSION" pnpm -v || $SUDO npm install -g "pnpm@$PNPM_VERSION"
-    return
-  fi
-
-  local arch
-  case "$(uname -m)" in
-    x86_64|amd64) arch="x64" ;;
-    aarch64|arm64) arch="arm64" ;;
-    *)
-      echo "Unsupported Node.js architecture: $(uname -m)" >&2
-      exit 1
-      ;;
-  esac
-
-  local node_dir="node-v${NODE_VERSION}-linux-${arch}"
-  local archive_name="${node_dir}.tar.xz"
-  $SUDO mkdir -p /opt
-  curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${archive_name}" -o "/tmp/$archive_name"
-  $SUDO tar -xJf "/tmp/$archive_name" -C /opt
-  $SUDO ln -sfn "/opt/$node_dir" /opt/node
-  $SUDO ln -sfn /opt/node/bin/node /usr/local/bin/node
-  $SUDO ln -sfn /opt/node/bin/npm /usr/local/bin/npm
-  $SUDO ln -sfn /opt/node/bin/npx /usr/local/bin/npx
-
-  node -v
-  npm -v
-  $SUDO npm install -g "pnpm@$PNPM_VERSION"
-  $SUDO ln -sfn /opt/node/bin/pnpm /usr/local/bin/pnpm
-  pnpm -v
-}
-
-install_nginx() {
-  log "Installing Nginx $NGINX_VERSION"
-  if ensure_command_version nginx "$NGINX_VERSION" nginx -v; then
-    enable_service nginx
-    return
-  fi
-  if [ "$PKG_MANAGER" = "yum" ]; then
-    pkg_install epel-release || true
-  fi
-  install_package_version_prefix nginx "$NGINX_VERSION"
-
-  if [ -f /etc/nginx/nginx.conf ] && [ -n "$NGINX_USER" ]; then
-    $SUDO sed -i.bak -E "s/^user[[:space:]]+[^;]+;/user $NGINX_USER;/" /etc/nginx/nginx.conf || true
-  fi
-
-  enable_service nginx
-  nginx -v
 }
 
 main() {
@@ -383,11 +289,7 @@ main() {
   install_base_tools
   create_tech_user
   install_git
-  install_jdk21
-  install_maven
   install_docker
-  install_node
-  install_nginx
 
   echo "If docker group membership was changed, log out and log in again for it to take effect."
 }

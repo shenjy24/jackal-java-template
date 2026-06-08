@@ -1,6 +1,6 @@
 # Offline Packages
 
-Put offline installation packages in this directory before running `../install-offline-software.sh`.
+Put offline installation packages in this directory before running `../install-software.sh`.
 
 Expected default file names:
 
