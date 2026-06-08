@@ -6,7 +6,7 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ================= 读取配置 =================
-# 如需调整配置，复制 prod.env.example 为 prod.env 后修改。
+# 如需调整配置，直接修改同目录下的 prod.env。
 ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/prod.env}"
 if [ -f "$ENV_FILE" ]; then
     set -a
