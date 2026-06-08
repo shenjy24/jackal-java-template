@@ -3,32 +3,44 @@
 set -Eeuo pipefail
 
 # ================= Path =================
+# 脚本、Dockerfile 和 docker-compose.yml 放在 deploy 目录下。
+# deploy 目录与业务代码仓库目录同级，离线部署只依赖上传的 jar，不依赖仓库源码。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGE_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
-cd "$PACKAGE_ROOT"
+
+resolve_deploy_path() {
+    case "$1" in
+        /*) printf '%s\n' "$1" ;;
+        *) printf '%s\n' "$SCRIPT_DIR/$1" ;;
+    esac
+}
 
 # ================= Load config =================
-OFFLINE_ENV_FILE="${OFFLINE_ENV_FILE:-$SCRIPT_DIR/offline.env}"
-if [ -f "$OFFLINE_ENV_FILE" ]; then
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/deploy.env}"
+if [ -f "$ENV_FILE" ]; then
     set -a
-    . "$OFFLINE_ENV_FILE"
+    . "$ENV_FILE"
     set +a
 fi
 
 ENV="${ENV:-prod}"
 REPO_NAME="${REPO_NAME:-java-template}"
 APP_PORT="${APP_PORT:-18080}"
-APP_LOG_DIR="${APP_LOG_DIR:-/data/java-template/logs}"
+APP_LOG_DIR="$(resolve_deploy_path "${APP_LOG_DIR:-../logs}")"
 APP_MEMORY_LIMIT="${APP_MEMORY_LIMIT:-1G}"
 APP_MEMORY_RESERVATION="${APP_MEMORY_RESERVATION:-512M}"
 IMAGE_KEEP_COUNT="${IMAGE_KEEP_COUNT:-3}"
 APP_CONTAINER_NAME="${APP_CONTAINER_NAME:-${REPO_NAME}-${ENV}}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${REPO_NAME}-${ENV}}"
 SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-$ENV}"
-JAR_DIR="${JAR_DIR:-jars}"
+JAR_DIR="$(resolve_deploy_path "${JAR_DIR:-../jars}")"
 JAR_FILE="${1:-${JAR_FILE:-}}"
 RUNTIME_IMAGE="${RUNTIME_IMAGE:-eclipse-temurin:21-jre}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-$SCRIPT_DIR/Dockerfile}"
+COMPOSE_FILE="${COMPOSE_FILE:-$SCRIPT_DIR/docker-compose.yml}"
+
+if [ -n "$JAR_FILE" ] && [ "${JAR_FILE#/}" = "$JAR_FILE" ] && [ ! -f "$JAR_FILE" ]; then
+    JAR_FILE="$(resolve_deploy_path "$JAR_FILE")"
+fi
 
 if [ -z "$JAR_FILE" ]; then
     mapfile -t JAR_FILES < <(find "$JAR_DIR" -maxdepth 1 -type f -name "*.jar" | sort)
@@ -36,10 +48,10 @@ if [ -z "$JAR_FILE" ]; then
         JAR_FILE="${JAR_FILES[0]}"
     else
         echo "请指定 jar 文件，例如："
-        echo "  bash start-offline.sh jars/jackal-java-template.jar"
+        echo "  bash start.sh ../jars/jackal-java-template.jar"
         echo
-        echo "或在 offline.env 中配置："
-        echo "  JAR_FILE=/data/java-template/jars/jackal-java-template.jar"
+        echo "或在 deploy.env 中配置："
+        echo "  JAR_FILE=../jars/jackal-java-template.jar"
         exit 1
     fi
 fi
@@ -51,6 +63,11 @@ fi
 
 if [ ! -f "$DOCKERFILE_PATH" ]; then
     echo "Dockerfile 不存在: $DOCKERFILE_PATH"
+    exit 1
+fi
+
+if [ ! -f "$COMPOSE_FILE" ]; then
+    echo "docker-compose.yml 不存在: $COMPOSE_FILE"
     exit 1
 fi
 
@@ -104,7 +121,7 @@ else
 fi
 
 echo "启动应用: $APP_IMAGE"
-docker compose -f docker-compose.yml up -d --no-build app-server
+docker compose -f "$COMPOSE_FILE" up -d --no-build app-server
 
 echo "等待容器状态..."
 sleep 5
