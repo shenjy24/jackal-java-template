@@ -3,13 +3,14 @@ FROM maven:3.9.11-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 COPY pom.xml .
+COPY .mvn/settings.xml /app/.mvn/settings.xml
 
 # 预下载依赖（利用缓存层）
-RUN mvn dependency:go-offline -q
+RUN mvn -s /app/.mvn/settings.xml dependency:go-offline -q
 
 COPY . .
 
-RUN mvn package -DskipTests -q
+RUN mvn -s /app/.mvn/settings.xml package -DskipTests -q
 
 FROM eclipse-temurin:21-jre
 
