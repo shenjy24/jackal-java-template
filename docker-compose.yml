@@ -26,6 +26,6 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: ${APP_MEMORY_LIMIT:-1G}
         reservations:
-          memory: 512M
+          memory: ${APP_MEMORY_RESERVATION:-512M}
