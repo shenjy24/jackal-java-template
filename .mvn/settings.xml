@@ -7,7 +7,7 @@
             <id>aliyun-public</id>
             <name>Aliyun Maven Public Repository</name>
             <url>https://maven.aliyun.com/repository/public</url>
-            <mirrorOf>central</mirrorOf>
+            <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
 </settings>
