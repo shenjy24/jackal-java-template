@@ -74,6 +74,8 @@ $RECYCLE.BIN/
 *.nar
 *.ear
 *.zip
+*.tar
+*.tgz
 *.tar.gz
 *.rar
 hs_err_pid*
