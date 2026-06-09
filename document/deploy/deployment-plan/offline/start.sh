@@ -3,8 +3,8 @@
 set -Eeuo pipefail
 
 # ================= Path =================
-# 脚本、Dockerfile 和 docker-compose.yml 放在 deploy 目录下。
-# deploy 目录与业务代码仓库目录同级，离线部署只依赖上传的 jar，不依赖仓库源码。
+# 脚本、Dockerfile、docker-compose.yml、deploy.env 放在同一部署目录下。
+# 离线部署只依赖本目录文件和上传的 jar，不依赖仓库源码。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 resolve_deploy_path() {
@@ -32,7 +32,7 @@ IMAGE_KEEP_COUNT="${IMAGE_KEEP_COUNT:-3}"
 APP_CONTAINER_NAME="${APP_CONTAINER_NAME:-${REPO_NAME}-${ENV}}"
 COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-${REPO_NAME}-${ENV}}"
 SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-$ENV}"
-JAR_DIR="$(resolve_deploy_path "${JAR_DIR:-../jars}")"
+JAR_DIR="$(resolve_deploy_path "${JAR_DIR:-.}")"
 JAR_FILE="${1:-${JAR_FILE:-}}"
 RUNTIME_IMAGE="${RUNTIME_IMAGE:-eclipse-temurin:21-jre}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-$SCRIPT_DIR/Dockerfile}"
@@ -48,10 +48,10 @@ if [ -z "$JAR_FILE" ]; then
         JAR_FILE="${JAR_FILES[0]}"
     else
         echo "请指定 jar 文件，例如："
-        echo "  bash start.sh ../jars/jackal-java-template.jar"
+        echo "  bash start.sh jackal-java-template.jar"
         echo
         echo "或在 deploy.env 中配置："
-        echo "  JAR_FILE=../jars/jackal-java-template.jar"
+        echo "  JAR_FILE=jackal-java-template.jar"
         exit 1
     fi
 fi
@@ -73,7 +73,7 @@ fi
 
 if ! docker image inspect "$RUNTIME_IMAGE" >/dev/null 2>&1; then
     echo "运行时基础镜像不存在: $RUNTIME_IMAGE"
-    echo "请先执行 load-images.sh 加载基础镜像。"
+    echo "请先使用 docker load -i 加载对应的基础镜像 tar。"
     exit 1
 fi
 
