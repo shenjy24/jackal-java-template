@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -56,7 +56,7 @@ public class AuthCommandService {
         if (loginToken == null) {
             return;
         }
-        loginToken.setToken("").setExpireTime(TimeUtil.currentTimestamp());
+        loginToken.setToken("").setExpireTime(TimeUtil.currentDateTime());
         authUserTokenDao.updateById(loginToken);
     }
 
@@ -66,7 +66,7 @@ public class AuthCommandService {
         }
         AuthUserTokenEntity token = authUserTokenDao.getAuthUserToken(adminUserId);
         String tokenValue = IdUtil.uuid();
-        Timestamp expireTime = TimeUtil.tokenExpireTime();
+        LocalDateTime expireTime = TimeUtil.tokenExpireTime();
         if (token == null) {
             token = new AuthUserTokenEntity(adminUserId, tokenValue, expireTime);
             authUserTokenDao.save(token);

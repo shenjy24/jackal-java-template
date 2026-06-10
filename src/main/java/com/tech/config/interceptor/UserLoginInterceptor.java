@@ -52,9 +52,8 @@ public class UserLoginInterceptor implements HandlerInterceptor {
             }
             throw new BizException(SystemCode.NO_LOGIN);
         }
-        long currentTime = System.currentTimeMillis();
-        long expireTime = userToken.getExpireTime().getTime();
-        if (expireTime - currentTime < Constants.TOKEN_REFRESH_MS) {
+        long remainingMs = TimeUtil.toMillis(userToken.getExpireTime()) - System.currentTimeMillis();
+        if (remainingMs < Constants.TOKEN_REFRESH_MS) {
             userToken.setExpireTime(TimeUtil.tokenExpireTime());
             userCommandService.updateUserToken(userToken);
         }

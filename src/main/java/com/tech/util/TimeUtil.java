@@ -2,7 +2,6 @@ package com.tech.util;
 
 import com.tech.common.constant.Constants;
 
-import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -207,13 +206,6 @@ public class TimeUtil {
         return toSeconds(System.currentTimeMillis());
     }
 
-    /**
-     * 当前毫秒时间戳（Timestamp）
-     */
-    public static Timestamp currentTimestamp() {
-        return new Timestamp(System.currentTimeMillis());
-    }
-
     // ===========================
     //  业务工具方法
     // ===========================
@@ -221,39 +213,36 @@ public class TimeUtil {
     /**
      * Token 过期时间
      */
-    public static Timestamp tokenExpireTime() {
-        return new Timestamp(System.currentTimeMillis() + Constants.TOKEN_EXPIRED_MS);
+    public static LocalDateTime tokenExpireTime() {
+        return fromMillis(System.currentTimeMillis() + Constants.TOKEN_EXPIRED_MS);
     }
 
     /**
      * 某天开始时间 00:00:00
      */
-    public static Timestamp dayStart(Timestamp timestamp) {
-        if (timestamp == null) {
+    public static LocalDateTime dayStart(LocalDateTime dateTime) {
+        if (dateTime == null) {
             return null;
         }
-        LocalDateTime start = timestamp.toLocalDateTime().toLocalDate().atStartOfDay();
-        return Timestamp.valueOf(start);
+        return dateTime.toLocalDate().atStartOfDay();
     }
 
     /**
      * 某天结束时间 23:59:59
      */
-    public static Timestamp dayEnd(Timestamp timestamp) {
-        if (timestamp == null) {
+    public static LocalDateTime dayEnd(LocalDateTime dateTime) {
+        if (dateTime == null) {
             return null;
         }
-        LocalDateTime end = timestamp.toLocalDateTime().toLocalDate().atTime(LocalTime.MAX);
-        return Timestamp.valueOf(end);
+        return dateTime.toLocalDate().atTime(LocalTime.MAX);
     }
 
     /**
      * 从指定日期加 duration 后的结束时间 23:59:59
      */
-    public static Timestamp nextPeriodEnd(Timestamp startDay, int durationValue, ChronoUnit unit) {
-        LocalDate nextDate = startDay.toLocalDateTime().toLocalDate().plus(durationValue, unit);
-        LocalDateTime nextEnd = nextDate.atTime(LocalTime.MAX);
-        return Timestamp.valueOf(nextEnd);
+    public static LocalDateTime nextPeriodEnd(LocalDateTime startDay, int durationValue, ChronoUnit unit) {
+        LocalDate nextDate = startDay.toLocalDate().plus(durationValue, unit);
+        return nextDate.atTime(LocalTime.MAX);
     }
 
     // ===========================

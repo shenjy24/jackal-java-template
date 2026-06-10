@@ -5,7 +5,7 @@ import com.tech.repository.entity.BaseEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -13,9 +13,9 @@ import java.sql.Timestamp;
 public class AuthUserTokenEntity extends BaseEntity {
     private Long userId;
     private String token;
-    private Timestamp expireTime;
+    private LocalDateTime expireTime;
 
-    public AuthUserTokenEntity(Long userId, String token, Timestamp expireTime) {
+    public AuthUserTokenEntity(Long userId, String token, LocalDateTime expireTime) {
         this.userId = userId;
         this.token = token;
         this.expireTime = expireTime;

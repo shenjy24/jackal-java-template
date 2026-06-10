@@ -41,7 +41,7 @@ public class AuthQueryService {
         if (token == null || token.getExpireTime() == null) {
             return true;
         }
-        return TimeUtil.currentTimestamp().compareTo(token.getExpireTime()) > 0;
+        return TimeUtil.currentDateTime().isAfter(token.getExpireTime());
     }
 
     public Set<String> listUserPermCode(Long userId, PermType permType) {

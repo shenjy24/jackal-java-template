@@ -41,6 +41,6 @@ public class UserQueryService {
         if (userToken == null || userToken.getExpireTime() == null) {
             return true;
         }
-        return TimeUtil.currentTimestamp().compareTo(userToken.getExpireTime()) > 0;
+        return TimeUtil.currentDateTime().isAfter(userToken.getExpireTime());
     }
 }

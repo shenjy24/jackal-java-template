@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -50,7 +50,7 @@ public class UserCommandService {
         }
         UserTokenEntity userToken = userTokenDao.getUserToken(userId);
         String token = IdUtil.uuid();
-        Timestamp expireTime = TimeUtil.tokenExpireTime();
+        LocalDateTime expireTime = TimeUtil.tokenExpireTime();
         if (null == userToken) {
             userToken = new UserTokenEntity().setUserId(userId).setToken(token).setExpireTime(expireTime);
             userTokenDao.save(userToken);

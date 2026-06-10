@@ -52,9 +52,8 @@ public class AdminLoginInterceptor implements HandlerInterceptor {
             }
             throw new BizException(SystemCode.NO_LOGIN);
         }
-        long currentTime = System.currentTimeMillis();
-        long expireTime = adminToken.getExpireTime().getTime();
-        if (expireTime - currentTime < Constants.TOKEN_REFRESH_MS) {
+        long remainingMs = TimeUtil.toMillis(adminToken.getExpireTime()) - System.currentTimeMillis();
+        if (remainingMs < Constants.TOKEN_REFRESH_MS) {
             adminToken.setExpireTime(TimeUtil.tokenExpireTime());
             authCommandService.updateToken(adminToken);
         }

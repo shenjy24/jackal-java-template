@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * BaseEntity
@@ -23,10 +23,10 @@ public abstract class BaseEntity implements Serializable {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
-    private Timestamp createTime;
+    private LocalDateTime createTime;
     /**
      * 最后更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE, update = "now()")
-    private Timestamp updateTime;
+    private LocalDateTime updateTime;
 }
