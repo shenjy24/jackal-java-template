@@ -97,17 +97,18 @@ public class TimeUtil {
     }
 
     /**
-     * "yyyy-MM-dd HH:mm:ss" → LocalDateTime
+     * "yyyy-MM-dd HH:mm:ss" → LocalDateTime（Asia/Shanghai 业务本地时间）
      */
     public static LocalDateTime parseDateTime(String dateTime) {
         return LocalDateTime.parse(dateTime, FMT_DATETIME);
     }
 
     /**
-     * "yyyy-MM-dd'T'HH:mm:ss'Z'"（UTC）→ LocalDateTime（UTC）
+     * "yyyy-MM-dd'T'HH:mm:ss'Z'"（UTC）→ LocalDateTime（Asia/Shanghai）
      */
     public static LocalDateTime parseUtcDateTime(String utcTime) {
-        return LocalDateTime.parse(utcTime, FMT_DATETIME_UTC);
+        Instant instant = LocalDateTime.parse(utcTime, FMT_DATETIME_UTC).toInstant(ZoneOffset.UTC);
+        return LocalDateTime.ofInstant(instant, ZONE);
     }
 
     // ===========================
@@ -132,7 +133,7 @@ public class TimeUtil {
      * UTC 时间字符串 → 毫秒时间戳
      */
     public static long toMillisFromUtc(String utcTime) {
-        return parseUtcDateTime(utcTime).toInstant(ZoneOffset.UTC).toEpochMilli();
+        return toMillis(parseUtcDateTime(utcTime));
     }
 
     /**
