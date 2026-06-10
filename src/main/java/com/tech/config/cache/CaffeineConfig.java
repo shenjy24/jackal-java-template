@@ -2,7 +2,7 @@ package com.tech.config.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.tech.common.constant.Constants;
+import com.tech.common.constant.Caches;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.CacheManager;
@@ -32,7 +32,7 @@ public class CaffeineConfig {
             @Override
             protected Cache<Object, Object> createNativeCaffeineCache(@NotNull String name) {
                 return switch (name) {
-                    case Constants.CACHE_USER -> createUserCache();
+                    case Caches.CACHE_USER -> createUserCache();
                     default -> createDefaultCache(name);
                 };
             }

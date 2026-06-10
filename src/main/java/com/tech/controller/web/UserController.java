@@ -2,8 +2,8 @@ package com.tech.controller.web;
 
 import com.tech.common.annotation.auth.Anonymous;
 import com.tech.common.annotation.auth.UserId;
-import com.tech.model.qo.user.LoginAccountQo;
-import com.tech.model.vo.user.UserVo;
+import com.tech.repository.model.qo.user.LoginAccountQo;
+import com.tech.repository.model.vo.user.UserVo;
 import com.tech.repository.entity.user.UserEntity;
 import com.tech.service.user.UserAssembler;
 import com.tech.service.user.UserCommandService;

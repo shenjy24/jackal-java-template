@@ -2,10 +2,17 @@ package com.tech.common.enums.auth;
 
 import lombok.Getter;
 
+/**
+ * 权限类型
+ *
+ * @author shenjy
+ * @version 1.0
+ * @since 2025-01-02
+ */
 @Getter
 public enum PermType {
-    API(1, "接口"),
-    MENU(2, "菜单"),
+    MENU(1, "菜单"),
+    BUTTON(2, "按钮"),
     ;
 
     private final Integer code;

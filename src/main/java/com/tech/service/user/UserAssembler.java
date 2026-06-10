@@ -1,6 +1,6 @@
 package com.tech.service.user;
 
-import com.tech.model.vo.user.UserVo;
+import com.tech.repository.model.vo.user.UserVo;
 import com.tech.repository.entity.user.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ public class UserAssembler {
             return null;
         }
         return new UserVo()
-                .setUserId(user.getUserId())
+                .setId(user.getId())
                 .setNickname(user.getNickname())
                 .setAvatar(user.getAvatar())
                 .setAddress(user.getAddress())

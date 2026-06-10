@@ -1,6 +1,5 @@
 package com.tech.component.aliyun;
 
-import com.alibaba.fastjson2.JSON;
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -14,15 +13,16 @@ import com.tech.common.enums.FileTypeEnum;
 import com.tech.config.property.AliyunProperty;
 import com.tech.config.response.bean.BizException;
 import com.tech.util.IdUtil;
+import com.tech.util.JsonUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -90,14 +90,14 @@ public class OssInvoker {
             return "";
         }
         PutObjectResult result = ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(data));
-        log.info("oss upload binary data, result:{}", JSON.toJSONString(result));
+        log.info("oss upload binary data, result:{}", JsonUtil.toJson(result));
         return property.getOssUrl() + objectName;
     }
 
     public String upload(String bucketName, String objectName, Map<String, Object> headers, byte[] data) {
         if (StringUtils.isBlank(bucketName)
                 || StringUtils.isBlank(objectName)
-                || MapUtils.isEmpty(headers)
+                || CollectionUtils.isEmpty(headers)
                 || data == null || data.length == 0) {
             return "";
         }
@@ -106,7 +106,7 @@ public class OssInvoker {
             metadata.setHeader(entry.getKey(), entry.getValue());
         }
         PutObjectResult result = ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(data), metadata);
-        log.info("oss upload binary data, result={}", JSON.toJSONString(result));
+        log.info("oss upload binary data, result={}", JsonUtil.toJson(result));
         return property.getOssUrl() + objectName;
     }
 

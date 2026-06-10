@@ -1,0 +1,43 @@
+services:
+  mysql-service:
+    image: mysql:8.4
+    container_name: mysql
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-template}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_bin
+      - --default-time-zone=+08:00
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/logs:/var/log/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"        # 最多使用 1 个 CPU 核心
+          memory: 512M       # 内存上限 512M
+        reservations:
+          cpus: "0.5"        # 保证至少 0.5 核
+          memory: 215M       # 保证至少 215M 内存
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"      # 限制单个日志文件大小
+        max-file: "3"        # 最多保留 3 个日志文件
+
+volumes:
+  mysql-data:
+    name: mysql-data   # 可选：固定卷的名称

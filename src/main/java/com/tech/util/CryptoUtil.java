@@ -39,7 +39,6 @@ public final class CryptoUtil {
 
     public static void main(String[] args) {
         String raw = "admin";
-        String encoded = CryptoUtil.encode("admin");
-        System.out.println(CryptoUtil.matches(raw, encoded));
+        System.out.println(encode(raw));
     }
 }

@@ -1,6 +1,6 @@
 package com.tech.config.response.bean;
 
-import com.alibaba.fastjson2.JSON;
+import com.tech.util.JsonUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,6 +57,6 @@ public class JsonResult<T> implements Serializable {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return JsonUtil.toJson(this);
     }
 }

@@ -1,6 +1,6 @@
 package com.tech.service.user;
 
-import com.tech.common.constant.Constants;
+import com.tech.common.constant.Caches;
 import com.tech.repository.dao.user.UserAccountDao;
 import com.tech.repository.dao.user.UserDao;
 import com.tech.repository.dao.user.UserTokenDao;
@@ -22,7 +22,7 @@ public class UserQueryService {
     private final UserTokenDao userTokenDao;
     private final UserAccountDao userAccountDao;
 
-    @Cacheable(Constants.CACHE_USER)
+    @Cacheable(Caches.CACHE_USER)
     public UserEntity getUser(Long userId) {
         if (userId == null) {
             return null;
