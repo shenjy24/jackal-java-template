@@ -1,9 +1,9 @@
 package com.tech.config.response;
 
-import com.alibaba.fastjson2.JSON;
 import com.tech.common.annotation.auth.DirectResponse;
 import com.tech.config.response.bean.JsonResult;
 import com.tech.config.response.bean.SystemCode;
+import com.tech.util.JsonUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -37,7 +37,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             if (!(body instanceof String)) {
                 return new JsonResult(SystemCode.SUCCESS, body);
             } else {
-                return JSON.parseObject(JSON.toJSONString(new JsonResult(SystemCode.SUCCESS, body)));
+                return JsonUtil.toMap(new JsonResult(SystemCode.SUCCESS, body));
             }
         }
         return body;

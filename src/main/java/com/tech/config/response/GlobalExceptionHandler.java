@@ -1,14 +1,13 @@
 package com.tech.config.response;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.tech.config.response.bean.BizException;
 import com.tech.config.response.bean.JsonResult;
 import com.tech.config.response.bean.SystemCode;
+import com.tech.util.StringUtil;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -34,8 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public JsonResult handle(Exception ex) {
         if (ex instanceof BizException e) {
-            Iterable<String> iterable = Splitter.on(":").trimResults().omitEmptyStrings().split(ex.getMessage());
-            List<String> items = Lists.newArrayList(iterable);
+            List<String> items = StringUtil.split(ex.getMessage(), ":");
             JsonResult<Void> result = new JsonResult<>(items.get(1), items.get(2));
             log.error("handle biz exception, {}, {}", result, e.getMessage());
             return result;
@@ -57,7 +55,7 @@ public class GlobalExceptionHandler {
             }
         }
         if (ex instanceof NoResourceFoundException e) {
-            JsonResult<Void> jsonResult = new JsonResult<>(String.valueOf(HttpStatus.SC_NOT_FOUND), "Not Found");
+            JsonResult<Void> jsonResult = new JsonResult<>(String.valueOf(HttpStatus.NOT_FOUND.value()), "Not Found");
             log.error("no resource found exception, {}, {}", jsonResult, e.getMessage());
             return jsonResult;
         }

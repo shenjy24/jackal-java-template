@@ -1,11 +1,9 @@
 package com.tech.util;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -64,7 +62,7 @@ public class OkHttpUtil {
             return null;
         }
 
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 
     public static Response get(String url, Map<String, Object> params) throws IOException {
@@ -90,14 +88,14 @@ public class OkHttpUtil {
             return null;
         }
         HttpUrl.Builder builder = httpUrl.newBuilder();
-        if (MapUtils.isNotEmpty(params)) {
+        if (!CollectionUtils.isEmpty(params)) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 builder.addQueryParameter(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
 
         Request.Builder requestBuilder = new Request.Builder().url(builder.build());
-        if (MapUtils.isNotEmpty(headers)) {
+        if (!CollectionUtils.isEmpty(headers)) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 requestBuilder.addHeader(entry.getKey(), entry.getValue());
             }
@@ -124,7 +122,7 @@ public class OkHttpUtil {
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 
     /**
@@ -167,7 +165,7 @@ public class OkHttpUtil {
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 
     /**
@@ -195,7 +193,7 @@ public class OkHttpUtil {
                 .url(url)
                 .post(requestBody);
         // 添加头部
-        if (MapUtils.isNotEmpty(headers)) {
+        if (!CollectionUtils.isEmpty(headers)) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 requestBuilder.addHeader(entry.getKey(), entry.getValue());
             }
@@ -207,7 +205,7 @@ public class OkHttpUtil {
 
     public static <T> T postJson(String url, Map<String, Object> params, Map<String, String> headers, Class<T> clazz) {
         String data;
-        try (Response response = postJson(url, JSON.toJSONString(params), headers)) {
+        try (Response response = postJson(url, JsonUtil.toJson(params), headers)) {
             if (response.body() == null) {
                 return null;
             }
@@ -221,7 +219,7 @@ public class OkHttpUtil {
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 
     public static <T> T postJson(String url, Class<T> clazz) {
@@ -229,7 +227,7 @@ public class OkHttpUtil {
     }
 
     public static <T> T postJson(String url, Map<String, Object> params, Class<T> clazz) {
-        return postJson(url, JSON.toJSONString(params), new HashMap<>(), clazz);
+        return postJson(url, JsonUtil.toJson(params), new HashMap<>(), clazz);
     }
 
     public static <T> T postJson(String url, String params, Map<String, String> headers, Class<T> clazz) {
@@ -248,7 +246,7 @@ public class OkHttpUtil {
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 
     /**
@@ -264,7 +262,7 @@ public class OkHttpUtil {
                 .url(url)
                 .post(requestBody);
         // 添加头部
-        if (MapUtils.isNotEmpty(headers)) {
+        if (!CollectionUtils.isEmpty(headers)) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 requestBuilder.addHeader(entry.getKey(), entry.getValue());
             }
@@ -290,6 +288,6 @@ public class OkHttpUtil {
         if (StringUtils.isBlank(data)) {
             return null;
         }
-        return JSONObject.parseObject(data, clazz);
+        return JsonUtil.parse(data, clazz);
     }
 }
