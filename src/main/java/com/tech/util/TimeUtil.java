@@ -40,6 +40,9 @@ public class TimeUtil {
      * LocalDateTime → "yyMMddHHmmssSSS"
      */
     public static String formatCompact(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
         return FMT_COMPACT.format(dateTime);
     }
 
@@ -54,6 +57,9 @@ public class TimeUtil {
      * LocalDate → "yyyy-MM-dd"
      */
     public static String formatDate(LocalDate date) {
+        if (date == null) {
+            return null;
+        }
         return FMT_DATE.format(date);
     }
 
@@ -61,6 +67,9 @@ public class TimeUtil {
      * LocalDateTime → "yyyy-MM-dd HH:mm:ss"
      */
     public static String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
         return FMT_DATETIME.format(dateTime);
     }
 
@@ -93,6 +102,9 @@ public class TimeUtil {
      * "yyyy-MM-dd" → LocalDate
      */
     public static LocalDate parseDate(String date) {
+        if (date == null || date.isBlank()) {
+            return null;
+        }
         return LocalDate.parse(date, FMT_DATE);
     }
 
@@ -100,6 +112,9 @@ public class TimeUtil {
      * "yyyy-MM-dd HH:mm:ss" → LocalDateTime（Asia/Shanghai 业务本地时间）
      */
     public static LocalDateTime parseDateTime(String dateTime) {
+        if (dateTime == null || dateTime.isBlank()) {
+            return null;
+        }
         return LocalDateTime.parse(dateTime, FMT_DATETIME);
     }
 
@@ -107,6 +122,9 @@ public class TimeUtil {
      * "yyyy-MM-dd'T'HH:mm:ss'Z'"（UTC）→ LocalDateTime（Asia/Shanghai）
      */
     public static LocalDateTime parseUtcDateTime(String utcTime) {
+        if (utcTime == null || utcTime.isBlank()) {
+            return null;
+        }
         Instant instant = LocalDateTime.parse(utcTime, FMT_DATETIME_UTC).toInstant(ZoneOffset.UTC);
         return LocalDateTime.ofInstant(instant, ZONE);
     }
@@ -118,35 +136,41 @@ public class TimeUtil {
     /**
      * "yyyy-MM-dd" → 毫秒时间戳（当天 00:00:00）
      */
-    public static long toMillisFromDate(String date) {
+    public static Long toMillisFromDate(String date) {
         return toMillis(parseDate(date));
     }
 
     /**
      * "yyyy-MM-dd HH:mm:ss" → 毫秒时间戳
      */
-    public static long toMillisFromDateTime(String dateTime) {
+    public static Long toMillisFromDateTime(String dateTime) {
         return toMillis(parseDateTime(dateTime));
     }
 
     /**
      * UTC 时间字符串 → 毫秒时间戳
      */
-    public static long toMillisFromUtc(String utcTime) {
+    public static Long toMillisFromUtc(String utcTime) {
         return toMillis(parseUtcDateTime(utcTime));
     }
 
     /**
      * LocalDate → 毫秒时间戳（当天 00:00:00）
      */
-    public static long toMillis(LocalDate date) {
+    public static Long toMillis(LocalDate date) {
+        if (date == null) {
+            return null;
+        }
         return date.atStartOfDay(ZONE).toInstant().toEpochMilli();
     }
 
     /**
      * LocalDateTime → 毫秒时间戳
      */
-    public static long toMillis(LocalDateTime dateTime) {
+    public static Long toMillis(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return null;
+        }
         return dateTime.atZone(ZONE).toInstant().toEpochMilli();
     }
 
@@ -166,6 +190,16 @@ public class TimeUtil {
      */
     public static LocalDateTime fromMillis(long millis) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZONE);
+    }
+
+    /**
+     * 毫秒时间戳 → LocalDateTime（null 安全）
+     */
+    public static LocalDateTime fromMillis(Long millis) {
+        if (millis == null) {
+            return null;
+        }
+        return fromMillis(millis.longValue());
     }
 
     // ===========================
@@ -242,6 +276,9 @@ public class TimeUtil {
      * 从指定日期加 duration 后的结束时间 23:59:59
      */
     public static LocalDateTime nextPeriodEnd(LocalDateTime startDay, int durationValue, ChronoUnit unit) {
+        if (startDay == null) {
+            return null;
+        }
         LocalDate nextDate = startDay.toLocalDate().plus(durationValue, unit);
         return nextDate.atTime(LocalTime.MAX);
     }
