@@ -12,6 +12,7 @@ public class AuthMenuVo {
     private String name;
     private String icon;
     private String path;
+    private String component;
     private Integer sort;
     private String remark;
     private Integer checked;

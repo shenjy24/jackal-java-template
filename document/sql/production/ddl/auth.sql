@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `auth_perm` (
   `type`        tinyint         NOT NULL COMMENT '权限类型 1.菜单 2.按钮',
   `icon`        varchar(50)     DEFAULT NULL COMMENT '图标',
   `path`        varchar(50)     DEFAULT NULL COMMENT '链接地址',
+  `component`   varchar(100)    DEFAULT NULL COMMENT '前端组件路径',
   `sort`        int             NOT NULL DEFAULT 0 COMMENT '排序',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
   `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
