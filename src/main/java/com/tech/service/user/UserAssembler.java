@@ -2,6 +2,7 @@ package com.tech.service.user;
 
 import com.tech.repository.model.vo.user.UserVo;
 import com.tech.repository.entity.user.UserEntity;
+import com.tech.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,6 @@ public class UserAssembler {
                 .setAddress(user.getAddress())
                 .setGender(user.getGender())
                 .setPhone(user.getPhone())
-                .setBirthday(user.getBirthday());
+                .setBirthday(TimeUtil.formatDate(user.getBirthday()));
     }
 }

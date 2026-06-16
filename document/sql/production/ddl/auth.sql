@@ -5,11 +5,11 @@ CREATE TABLE IF NOT EXISTS `auth_user`
     `avatar`        varchar(255)      DEFAULT NULL COMMENT '用户头像',
     `account`       varchar(50)       NOT NULL COMMENT '登陆账号',
     `password`      varchar(255)      NOT NULL COMMENT '登陆密码',
-    `deleted`       bigint            NOT NULL DEFAULT '0' COMMENT '是否删除',
+    `deleted`       bigint            NOT NULL DEFAULT '0' COMMENT '删除标记，0=未删除，非0=删除时间戳(ms)',
     `create_time`   datetime          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   datetime          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_account` (`account`)
+    UNIQUE KEY `uk_account_deleted` (`account`, `deleted`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT ='用户信息表';
 
 CREATE TABLE IF NOT EXISTS `auth_user_token`
@@ -21,18 +21,19 @@ CREATE TABLE IF NOT EXISTS `auth_user_token`
     `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_user_id` (`user_id`)
+    UNIQUE KEY `uk_user_id` (`user_id`),
+    UNIQUE KEY `uk_token` (`token`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT ='用户登录token表';
 
 CREATE TABLE IF NOT EXISTS `auth_role` (
   `id`          bigint          NOT NULL COMMENT '角色ID',
   `name`        varchar(100)    NOT NULL COMMENT '角色名称',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
-  `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '删除标记，0=未删除，非0=删除时间戳(ms)',
   `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_name` (`name`)
+  UNIQUE KEY `uk_name_deleted` (`name`, `deleted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='角色表';
 
 CREATE TABLE IF NOT EXISTS `auth_perm` (
@@ -43,13 +44,14 @@ CREATE TABLE IF NOT EXISTS `auth_perm` (
   `type`        tinyint         NOT NULL COMMENT '权限类型 1.菜单 2.按钮',
   `icon`        varchar(50)     DEFAULT NULL COMMENT '图标',
   `path`        varchar(50)     DEFAULT NULL COMMENT '链接地址',
+  `component`   varchar(100)    DEFAULT NULL COMMENT '前端组件路径',
   `sort`        int             NOT NULL DEFAULT 0 COMMENT '排序',
   `remark`      varchar(255)    DEFAULT NULL COMMENT '备注',
-  `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `deleted`     bigint          NOT NULL DEFAULT 0 COMMENT '删除标记，0=未删除，非0=删除时间戳(ms)',
   `create_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_perm_code` (`code`),
+  UNIQUE KEY `uk_perm_code_deleted` (`code`, `deleted`),
   KEY `idx_parent_id` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='权限表';
 
@@ -60,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `auth_user_role` (
   `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_role` (`user_id`, `role_id`),
   KEY `idx_user_id` (`user_id`),
   KEY `idx_role_id` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='用户角色关联表';
@@ -71,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `auth_role_perm` (
   `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_role_perm` (`role_id`, `perm_id`),
   KEY `idx_role_id` (`role_id`),
   KEY `idx_perm_id` (`perm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = DYNAMIC COMMENT='角色权限关联表';
-

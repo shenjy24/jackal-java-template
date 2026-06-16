@@ -100,6 +100,7 @@ public class AuthAssembler {
                 .setType(perm.getType())
                 .setIcon(perm.getIcon())
                 .setPath(perm.getPath())
+                .setComponent(perm.getComponent())
                 .setSort(perm.getSort())
                 .setRemark(perm.getRemark());
         return vo;
@@ -152,6 +153,7 @@ public class AuthAssembler {
                 .setName(menu.getName())
                 .setIcon(menu.getIcon())
                 .setPath(menu.getPath())
+                .setComponent(menu.getComponent())
                 .setSort(menu.getSort())
                 .setRemark(menu.getRemark())
                 .setChecked(BooleanUtils.toInteger(checkedIds.contains(menu.getId())))

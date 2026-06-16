@@ -11,6 +11,7 @@ public class AuthPermVo {
     private Integer type;
     private String icon;
     private String path;
+    private String component;
     private Integer sort;
     private String remark;
 }

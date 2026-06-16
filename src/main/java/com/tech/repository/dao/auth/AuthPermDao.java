@@ -27,7 +27,8 @@ public class AuthPermDao extends ServiceImpl<AuthPermMapper, AuthPermEntity> {
                 .orderByAsc(AuthPermEntity::getId));
     }
 
-    public IPage<AuthPermEntity> queryAuthPerm(String code, String name, Integer type, Integer pageNum, Integer pageSize) {
+    public IPage<AuthPermEntity> queryAuthPerm(String code, String name, Integer type,
+                                                Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<AuthPermEntity> wrapper = new LambdaQueryWrapper<AuthPermEntity>()
                 .like(StringUtils.isNotBlank(code), AuthPermEntity::getCode, code)
                 .like(StringUtils.isNotBlank(name), AuthPermEntity::getName, name)

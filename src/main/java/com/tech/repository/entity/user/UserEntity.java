@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.tech.repository.entity.LogicEntity;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @TableName("user")
 public class UserEntity extends LogicEntity {
@@ -26,7 +28,7 @@ public class UserEntity extends LogicEntity {
     /**
      * 生日
      */
-    private String birthday;
+    private LocalDate birthday;
     /**
      * 住址
      */

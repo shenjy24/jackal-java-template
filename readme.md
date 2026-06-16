@@ -103,10 +103,18 @@ mvn -q -DskipTests compile
 初始化 SQL 位于：
 
 ```text
-document/sql/线上版本/
-├── ddl/    # 表结构
+document/sql/production/
+├── ddl/    # 表结构（auth.sql、user.sql）
 └── dml/    # 初始化数据
+document/sql/versioned/
+└── ddl.sql # 已有库增量 DDL（执行前见脚本内校验说明）
 ```
+
+DDL 约定摘要：
+
+- 逻辑删除字段 `deleted`：`0` 表示未删除，删除后为毫秒时间戳；带业务唯一键的表使用 `(字段, deleted)` 复合唯一索引，软删后可复用同业务键。
+- `user_token`、`auth_user_token` 对 `token` 建唯一索引，支撑鉴权查询。
+- `auth_user_role`、`auth_role_perm` 对关联对建复合唯一索引，防止重复绑定。
 
 ## 部署
 

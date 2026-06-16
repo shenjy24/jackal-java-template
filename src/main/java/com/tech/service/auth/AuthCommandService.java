@@ -172,7 +172,8 @@ public class AuthCommandService {
         authRoleDao.removeById(roleId);
     }
 
-    public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String icon, String path, Integer sort, String remark) {
+    public AuthPermEntity saveAuthPerm(Long parentId, String code, String name, Integer type, String icon, String path,
+                                       String component, Integer sort, String remark) {
         AuthPermEntity perm = new AuthPermEntity()
                 .setParentId(parentId)
                 .setCode(code)
@@ -180,13 +181,15 @@ public class AuthCommandService {
                 .setType(type)
                 .setIcon(icon)
                 .setPath(path)
+                .setComponent(component)
                 .setSort(sort)
                 .setRemark(remark);
         authPermDao.save(perm);
         return perm;
     }
 
-    public AuthPermEntity updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String icon, String path, Integer sort, String remark) {
+    public AuthPermEntity updateAuthPerm(Long id, Long parentId, String code, String name, Integer type, String icon,
+                                         String path, String component, Integer sort, String remark) {
         AuthPermEntity perm = authPermDao.getById(id);
         if (perm == null) {
             throw new BizException(ErrorCode.PARAM_ERROR);
@@ -197,6 +200,7 @@ public class AuthCommandService {
                 .setType(type)
                 .setIcon(icon)
                 .setPath(path)
+                .setComponent(component)
                 .setSort(sort)
                 .setRemark(remark);
         authPermDao.updateById(perm);
