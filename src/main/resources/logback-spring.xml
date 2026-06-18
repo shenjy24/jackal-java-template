@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration scan="true" scanPeriod="60 seconds" debug="false">
+<configuration scan="false" debug="false">
 
     <!-- 定义日志文件 输出位置 -->
     <property name="log.log_dir" value="logs"/>
@@ -8,6 +8,8 @@
     <property name="log.errorMaxHistory" value="90"/>
     <property name="log.level" value="INFO"/>
     <property name="log.maxSize" value="100MB"/>
+    <property name="log.asyncQueueSize" value="8192"/>
+    <property name="log.errorAsyncQueueSize" value="2048"/>
 
     <!-- 统一的日志格式 - 文件使用 -->
     <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
@@ -25,15 +27,17 @@
 
     <!-- 异步文件输出 -->
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
-        <discardingThreshold>0</discardingThreshold>
-        <queueSize>512</queueSize>
+        <discardingThreshold>20</discardingThreshold>
+        <queueSize>${log.asyncQueueSize}</queueSize>
+        <includeCallerData>false</includeCallerData>
         <appender-ref ref="FILE"/>
     </appender>
 
     <!-- 异步错误日志输出 -->
     <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
-        <queueSize>512</queueSize>
+        <queueSize>${log.errorAsyncQueueSize}</queueSize>
+        <includeCallerData>false</includeCallerData>
         <appender-ref ref="ERROR_FILE"/>
     </appender>
 
@@ -102,7 +106,6 @@
             <appender-ref ref="ASYNC_ERROR"/>
         </logger>
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="ASYNC_FILE"/>
             <appender-ref ref="ASYNC_ERROR"/>
         </root>
