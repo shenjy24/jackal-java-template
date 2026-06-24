@@ -48,7 +48,7 @@ if [ -z "$JAR_FILE" ]; then
         JAR_FILE="${JAR_FILES[0]}"
     else
         echo "请指定 jar 文件，例如："
-        echo "  bash start.sh jackal-java-template.jar"
+        echo "  bash deploy.sh jackal-java-template.jar"
         echo
         echo "或在 deploy.env 中配置："
         echo "  JAR_FILE=jackal-java-template.jar"
