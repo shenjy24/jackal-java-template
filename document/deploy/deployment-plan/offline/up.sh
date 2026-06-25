@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 # ================= Path =================
-# 脚本、Dockerfile、docker-compose.yml、deploy.env 放在同一部署目录下。
+# 脚本、Dockerfile、docker-compose.yml、app.env 放在同一部署目录下。
 # 离线部署只依赖本目录文件和上传的 jar，不依赖仓库源码。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -15,7 +15,7 @@ resolve_deploy_path() {
 }
 
 # ================= Load config =================
-ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/deploy.env}"
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/app.env}"
 if [ -f "$ENV_FILE" ]; then
     set -a
     . "$ENV_FILE"
@@ -48,9 +48,9 @@ if [ -z "$JAR_FILE" ]; then
         JAR_FILE="${JAR_FILES[0]}"
     else
         echo "请指定 jar 文件，例如："
-        echo "  bash deploy.sh jackal-java-template.jar"
+        echo "  bash up.sh jackal-java-template.jar"
         echo
-        echo "或在 deploy.env 中配置："
+        echo "或在 app.env 中配置："
         echo "  JAR_FILE=jackal-java-template.jar"
         exit 1
     fi

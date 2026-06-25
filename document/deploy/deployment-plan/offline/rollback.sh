@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 # ================= Path =================
-# 脚本、docker-compose.yml 和 deploy.env 放在 deploy 目录下。
+# 脚本、docker-compose.yml 和 app.env 放在 deploy 目录下。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 resolve_deploy_path() {
@@ -20,7 +20,7 @@ if [ -f "$SCRIPT_DIR/app-image.env" ]; then
     set +a
 fi
 
-ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/deploy.env}"
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/app.env}"
 if [ -f "$ENV_FILE" ]; then
     set -a
     . "$ENV_FILE"

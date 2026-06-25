@@ -6,8 +6,8 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ================= 读取配置 =================
-# 如需调整配置，直接修改同目录下的 deploy.env。
-ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/deploy.env}"
+# 如需调整配置，直接修改同目录下的 app.env。
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/app.env}"
 if [ -f "$ENV_FILE" ]; then
     set -a
     . "$ENV_FILE"

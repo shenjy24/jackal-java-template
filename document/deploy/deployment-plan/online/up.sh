@@ -8,8 +8,8 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ================= 读取配置 =================
-# 如需调整配置，直接修改同目录下的 deploy.env。
-ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/deploy.env}"
+# 如需调整配置，直接修改同目录下的 app.env。
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/app.env}"
 if [ -f "$ENV_FILE" ]; then
     set -a
     . "$ENV_FILE"
@@ -17,7 +17,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 # ================= 部署参数 =================
-# 可通过 deploy.env 或执行前环境变量覆盖。
+# 可通过 app.env 或执行前环境变量覆盖。
 ENV="${ENV:-prod}"
 BRANCH_NAME="${BRANCH_NAME:-main}"
 REPO_NAME="${REPO_NAME:-java-template}"
