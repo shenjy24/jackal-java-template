@@ -6,9 +6,9 @@ spring:
   profiles:
     default: local
   datasource:
-    url: jdbc:mysql://172.17.0.1:3306/template?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://mysql:3306/template?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: "******"
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
