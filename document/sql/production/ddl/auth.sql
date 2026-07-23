@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `auth_perm` (
   `parent_id`   bigint          NOT NULL DEFAULT 0 COMMENT '父级权限ID',
   `code`        varchar(50)     DEFAULT NULL COMMENT '权限编码',
   `name`        varchar(50)     NOT NULL COMMENT '权限名称',
-  `type`        tinyint         NOT NULL COMMENT '权限类型 1.菜单 2.按钮',
+  `type`        tinyint         NOT NULL COMMENT '权限类型 1.目录 2.菜单 3.按钮',
   `icon`        varchar(50)     DEFAULT NULL COMMENT '图标',
   `path`        varchar(50)     DEFAULT NULL COMMENT '链接地址',
   `component`   varchar(100)    DEFAULT NULL COMMENT '前端组件路径',

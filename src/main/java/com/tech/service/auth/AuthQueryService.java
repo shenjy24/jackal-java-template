@@ -81,7 +81,10 @@ public class AuthQueryService {
     }
 
     public List<AuthPermEntity> listUserMenu(Long userId) {
-        return listUserPerm(userId, PermType.MENU);
+        Set<Integer> menuTypes = Set.of(PermType.DIRECTORY.getCode(), PermType.MENU.getCode());
+        return listUserPerm(userId, null).stream()
+                .filter(e -> menuTypes.contains(e.getType()))
+                .collect(Collectors.toList());
     }
 
     public List<AuthPermEntity> listUserButton(Long userId, Long permId) {

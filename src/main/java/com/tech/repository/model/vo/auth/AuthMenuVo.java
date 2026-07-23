@@ -10,6 +10,7 @@ public class AuthMenuVo {
     private Long parentId;
     private String code;
     private String name;
+    private Integer type;
     private String icon;
     private String path;
     private String component;

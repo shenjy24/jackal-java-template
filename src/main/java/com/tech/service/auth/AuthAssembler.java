@@ -151,6 +151,7 @@ public class AuthAssembler {
                 .setParentId(menu.getParentId())
                 .setCode(menu.getCode())
                 .setName(menu.getName())
+                .setType(menu.getType())
                 .setIcon(menu.getIcon())
                 .setPath(menu.getPath())
                 .setComponent(menu.getComponent())

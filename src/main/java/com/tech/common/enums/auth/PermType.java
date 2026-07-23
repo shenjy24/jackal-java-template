@@ -11,8 +11,9 @@ import lombok.Getter;
  */
 @Getter
 public enum PermType {
-    MENU(1, "菜单"),
-    BUTTON(2, "按钮"),
+    DIRECTORY(1, "目录"),
+    MENU(2, "菜单"),
+    BUTTON(3, "按钮"),
     ;
 
     private final Integer code;
