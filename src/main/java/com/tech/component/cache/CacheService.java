@@ -1,12 +1,11 @@
 package com.tech.component.cache;
 
+import com.tech.common.constant.Caches;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CacheService {
@@ -14,16 +13,21 @@ public class CacheService {
     private final CacheManager cacheManager;
 
     public void clearCache(String cacheName) {
-        Cache cache = cacheManager.getCache(cacheName);
-        if (cache != null) {
-            cache.clear();
-        }
+        getCache(cacheName).clear();
     }
 
     public void evictCache(String cacheName, Object key) {
-        Cache cache = cacheManager.getCache(cacheName);
-        if (cache != null) {
-            cache.evict(key);
+        getCache(cacheName).evict(key);
+    }
+
+    private Cache getCache(String cacheName) {
+        if (!Caches.contains(cacheName)) {
+            throw new IllegalArgumentException("未注册的缓存名称：" + cacheName);
         }
+        Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null) {
+            throw new IllegalStateException("缓存未初始化：" + cacheName);
+        }
+        return cache;
     }
 }

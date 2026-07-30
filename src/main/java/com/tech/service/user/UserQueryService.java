@@ -22,7 +22,7 @@ public class UserQueryService {
     private final UserTokenDao userTokenDao;
     private final UserAccountDao userAccountDao;
 
-    @Cacheable(Caches.CACHE_USER)
+    @Cacheable(cacheNames = Caches.CACHE_USER, key = "#userId", condition = "#userId != null", unless = "#result == null")
     public UserEntity getUser(Long userId) {
         if (userId == null) {
             return null;
