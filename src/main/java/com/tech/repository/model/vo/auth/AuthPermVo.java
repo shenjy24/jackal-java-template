@@ -8,6 +8,7 @@ public class AuthPermVo {
     private Long parentId;
     private String code;
     private String name;
+    private String nameEn;
     private Integer type;
     private String icon;
     private String path;

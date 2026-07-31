@@ -12,6 +12,7 @@ public class AuthPermQo {
     private String code;
     @NotBlank(message = ErrorMsg.PARAM_ERROR)
     private String name;
+    private String nameEn;
     @NotNull(message = ErrorMsg.PARAM_ERROR)
     private Integer type;
     private String icon;
