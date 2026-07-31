@@ -382,6 +382,7 @@ public class AdminAuthController {
      *
      * @param qo 角色权限绑定参数
      */
+    @Permission(PermCode.ROLE_UPDATE)
     @PostMapping("/bindRolePerm")
     public void bindRolePerm(@Valid @RequestBody AuthRolePermBindQo qo) {
         authCommandService.bindRolePerm(qo.getRoleId(), qo.getPermIds());
